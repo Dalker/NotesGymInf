@@ -1,0 +1,235 @@
+#+TITLE: Résumé d'ISI
+#+AUTHOR: Dalker
+#+DATE: 2021.01.10
+* Introduction
+** considérations du 1er jour
+  - le gros (en %) du logiciel  actuel est libre
+  - plein de "petites mains", mais à la fin on doit travailler en groupe
+  - tout se qui s'exécute s'exécute quelque part (dans une machine physique)
+  - ressources: RFC, docs, liens, livres,...
+** Système informatique
+  - entité observable dont on peut décrire des *états* et *changements*
+  - *délimité* par son *environnement* avec lequel il peut intéragir via des
+    *interfaces*, *digitales* ou *analogiques*
+  - un système artificiel répond à des *besoins* avec une *solution*
+  - les systèmes sont généralement *composites* (plusieurs *composants*, pouvant
+    intéragir entre eux et avec l'environnement) "diviser pour mieux régner"
+  - *architecture*: représentation de l'organisation des composants et leurs interactions
+  - en info, traitement numérique 011101.. mais *support matériel* avec
+    *sous-systèmes* où s'exécutent les programmes
+  - *logiciel* = ensemble des programmes pouvant s'exécuter dans un système, lequel
+    est une instance physique; le logiciel représentent >70% du coût de nos
+    jours, et ce pour le développement (vs. le matériel dont les coûts sont dans
+    la production et distribution)
+  - le code *haut niveau* (haut niveau d'abstraction) est très "productif" mais
+    il repose sur des couches inférieures
+  - les bases logicielles, open source, adaptées, réutilisées sont utilisées à
+    différents niceaux d'abstraction, en interaction
+  - autres coûts: la *certification*
+** Architecture
+  - cathédrale: 1 architecte, bâtiment: qqs architextes, logiciel: tout le monde
+    est architecte => souci
+  - l'architecture donne une représentation répondant aux proccupations des *parties-prenantes*
+  - approche holistique / systémique, orientée objectifs
+  - méthodologie de modélisation
+  - *ultra-qualité*: adapter le niveau de qualité aux contraintes
+  - heuristique, a.k.a "feeling"
+  - possibilité de multiples modèles interdépendants et plusieurs points de vue
+    (selon intervenants) et plusieurs vues (opérationnel, fonctionnel,
+    organique)
+  - considérer tout le cycle de vie, la décomposition en sous-systèmes et
+    l'interaction avec l'environnement, dont d'autres systèmes, via interfaces
+  - considérer plusieurs niveaux d'abstraction
+** facteur temps
+  - "loi" (ou heuristique) de Moore (un des fondateurs d'Intel): capacités
+    doublent tous les 18 mois
+  - => concevoir produits avec 4-5 ans d'avance en prenant en compte cette
+    heuristique
+* Architecture d'ordinateur: "comment ça marche"
+  - physique < electronique < CPU < OS < machine virtuelle < programme <
+    application < environnement
+  - le "mot machine" a une taille fixe, généralement 32 ou 64 bits
+  - ex. de machine virtuelle: gestion de BDD slparant transactions pour assurer
+    cohérence finale; Java Virtual Machine pour abstraction "objet"; système ERP
+    dans application d'une banque
+  - ex. sans machine virtuelle: shell
+  - Memory Management Unit (MMU) interface CPU et mémoire; Directe Memory Access
+    (DMA) permet à la mémoire et un disque d'échanger des données directement
+    sans transiter par le CPU; temps de réponse très différents pour les 3
+    composants (cpu, mem, disk) => contraintes => optimisation nécessaire
+  - on utilise encore des disques car ils sont très fiables (aspect mécanique);
+    ils sont lus par secteurs; des algorithmes assurent de répartir les accès de
+    manière non séquentielle (pas tjs au même endroit) mais cela a un coût
+  - Arithmetic and Logic Unit (ALU) gère les calculs dans le CPU, par exemple
+    codage "en complément à 2" pour trouver opposé d'un numbre et implémenter la
+    soustraction comme une addition modifiée; l'ALU fait du parallélisme (+
+    efficace)
+  - un co-processeur arithmétique éventuel optimise les calculs avec des floats
+    NB: les "currency" (ex. bancaire) sont gérés comme des int
+  - parallélisation bit à bit pour une somme par exemple, carrément "câblée",
+    avec itérations pour gérer les retenues jusqu'à ce qu'elles soient toutes
+    nulles
+  - "poids" de bit: fort à gauche, faible à droite
+  - MIPS: MicroProcessor without Interlocked Pipeline Stages
+  - "program counter" = compteur ordinal d'adresse d'instruction pointant sur  "instruction memory"
+  - deux flux: "instruction memory" + "data memory"
+  - registres d'instruction vs. registres (adresses sur mémoire de base, offset,
+    ...)
+  - mémoire rapide et chère: registres (câblé) < cache (SRAM) < mem centrale
+    (DRAM) < disques SSD, magnétiques: lentes et bon marché
+  - la suite d'instructions du DRAM est cached, vu que probablement sera la
+    suite effective
+  - après chaque instruction, *état* de compteur ordinal, registres, mots
+    valides dans cache
+  - le flux normal peut être interrompu (par des *interruptions matérielles* ou
+    logicielles)
+  - la mémoire cache utilise une *table de hachage* basée sur des *tags* de 20
+    bits à combiner avec 10 bits d'index
+  - le MIPS usuel a 32 registres
+  - ex d'instruction: add rd, rs, rt (3 registres)
+  - instruction: fonctionnalité aux bits faibles, addresses de registres entre
+    deux, 5 bits spéciaux aux bits forts
+  - multiplexer (MUX) permet d'aiguiller plusieurs périphériques en une entrée
+  - *lignes de contrôle*
+* Chemin des données
+  - instruction: fetch -> decode -> execute -> write back (ou finish)
+  - autre version: instruction fetch -> decodate -> evnetuel calcul (ALU) ->
+    transfert mémoire -> write-back sur registres
+  - instruction register(IR): instruction en cours, 
+  - program counter (PC) = compteur ordinal: adresse de la prochaine instruction
+  - *contexte du programme* = IR + PC + registres processeur + zone mémoire du
+    programme en cours
+  - les mots qui traversent le CPU suivent le *chemin des données*
+  - l'horloge est calée sur l'instruction la plus longue; pour optimiser la
+    vitesse du cpu, on décompose donc des instructions complexes en instructions
+    plus simples -> instruction multicycle, stockages intermédiaires (autre option: pipelining)
+  - *vecteur d'interruption*: adresses des instructions à suivre pour chaque
+    exception à gérer (interruption => *context switch*)
+  - c'est l'OS qui gère les ressources, notamment les stacks (piles) de chaque
+    processus, à mettre en *swap* en cas d'interruption
+  - stack: pile du programme allouée par le runtime; heap(tas): vars globales,
+    alloc dynamique par le programme
+  - une *interruption* est un type d'*exception* (changement inattendu en cours
+    d'exécution d'une séquence d'instructions) provenant d'un élément extérieur (périphérique)
+* l'OS
+  - à partir de l'OS, c'est du logiciel, en-dessous, c'est des circuits
+  - le CPU expose la taille du mot matchine, le jeu d'instructions (qui seront
+    traitées de manière optimisée par l'électronique), les registres (32 si
+    MIPS), le chemin des données, le bus des données, des modes du processeurs
+    (mode noyau / mode user), des lignes de contrôle, des interrupts
+  - bus: PCI (extensions de carte mère), SPI serial master/slave (SCLK clock,
+    MOSI master out / slave in, MISO master in / slave out -> full duplex,
+    lignes dédiées pour chaque périphérique)
+  - ROM ou OTP (one time programmable) du CPU ont des données disponibles à
+    l'allumage (vs RAM "volatile", vide au démarrage); suite d'étapes pour
+    accéder au disque pour accéder au programme qui permet d'accéder au reste du
+    disque qui permet d'accéder au reste des programmes
+  - état allumé de base: standby en attendant une interruption
+  - un périphérique qui veut transférer une donnée demande une interruption au
+    CPU; le CPU, qui est plus rapide que le contrôleur de périphérique, choisit
+    les interrupts selon des priorités (tout ceci est mieux qui le polling, qui
+    fait perdre des cycles au CPU); c'est cependant l?OS qui gère les
+    interruptions (sensible car suspend le reste et requier cohérence et
+    ordonnancement, et soucis de sécurité)
+  - *noyau* de l'OS: partie protégée avec données et code, gère interruptions
+    (matérielles et logicielles), exécute services en mode protégé
+    *non-interruptible* (ce qui garantit la cohérence) via routines courtes
+  - un périphérique "lent" (ex: clavier) aura une basse priorité
+  - couches (layers): electronique -> hardware -> device control -> logical ->
+    bridges -> virtual -> user space -> reste de l'OS
+  - interruption provenant de l'"utilisateur": identifier (root ou pas?)
+  - services OS pour users: via GUI (métaphore de bureau), shell (terminal avec
+    ligne de commande OS) ou ssh (connexion depuis autre machine)
+  - services OS pour programmes: via API de l'OS (appels système - system call),
+    exécutés en mode noyau (ininterruptible); 1er service: charger et lancer
+    programmes user; en Linux pour C c'est glibc qui fournit l'API
+  - programme user: code compilé en module objet puis assemblé avec d'autres
+    modules objet, ce qui fournit une org d'espace d'adressage logique, avec
+    espace réservé pour l'OS, espace pour instructions, pour heap(tas), stack(pile)...
+    NB: la partie de mem "logique" réservée à l'OS est partagée pour tous les programmes!
+  - l'*espace d'adressage* logique est partagé; les petits programmes n'ont pas
+    besoin de tout, une bonne partie du code n'est pas utilisé (cas
+    exceptionnels)
+  - la gestion I/O est *synchrone* pour un programme (qui attend son I ou O)
+    mais *asynchrone* pour l'OS (qui gère des tas d'événements en attendant,
+    genre interruption souris, carte réseau,... et le *multi-processing* avec un
+    *contexte* pour chaque *processus*)
+  - *multi-processing* 
+    1) interrompre un prog par un autre plus prioritaire en *swappant/commutant*
+       son contexte (registres, stack) et laissant ses données en mémoire;
+    2) un *descripteur* de processus géré par l'OS a l'identité du process
+       (pid), sa priorité, un pointeur de sommet pile (stack pointer), une base
+       de table des pages et un lien de chaînage vers le prochain proc de même
+       priorité dans queue d'exécution, ainsi que le nombre de tics passés dans
+       le proc (pour décider quand céder la priorité, à certaines interruptions
+       d'horloge); tout ceci peut être en RAM ou swap
+    3) exécution *concurrente* des procs gérés par *pagination* pour éviter trop
+       de swapping; la pagination mappe la mém physique vers une mém logique, en
+       découpant l'adressage logique du programme en "pages" de 2^{12}=4kB,
+       mappés vers des *pageframes* de 4kB de mémoire physique; une *table de
+       pages* par programme gère l'adressage par no. de page (bits de poids fort
+       de l'addresse) + offset (bits de poids faible), dont 1 bit pour savir
+       s'il faut chercher en RAM ou swap. Les pages peu utilisées sont "swap out"
+       et une interruption *faute de page* demande des "swap in" (<- Linux fait
+       ça)
+     NB: la Direct Memory Access (DMA) aide à accélérer le swap out / swap in
+  - la *virtualisation* permet par exemple d'obtenir une machine virtuelle via
+    internet dont la mémoire allouée est limitée par ce qu'on a acheté
+  - le *trashing* est une possible perte de performance s'il y a beaucoup de
+    fautes de page
+  - effort de standardisation via *POSIX* et noyau Linux (au développement
+    centralisé et fiable), interfaces périphériques libres, standardisation de
+    programmation système => réduction des coûts et efficacité (ex: machine
+    virtuelle LAMP pour quelques centaines de CHF/an)
+* Network
+  - refs: man pages Linux, RFG internet engineering task force, W3C, "intro to
+    computer networks" de Peter L Dordal
+  - Box 1 <-LAN-> "Gray Box" <-IP-> "Black Box" <-IP-> "Gray Box" <-LAN-> Box 2
+  - les "Gray Box" sont des *routeurs*
+  - couches (*layers*): LAN / IP / TCP-UDP / HTTP-FTP-DNS-SMTP-SSH / Application
+  - communications: process-to-process (app), host-to-host (tcp/udp), lan-to-lan (ip)
+  - *en-têtes de message* s'ajoutent et s'enlèvent par couche
+  - chaque étape de connexion physique est soit par câble soit par ondes
+  - *ethernet*: câble coaxial, standard pour LAN dès 1980
+  - *commutation par paquets*: bits de synchronisation (11...10) suivis
+    d'adresse source (6b), adresse dest (6b), type (2b), message et checksum
+    (CRC: Cyclic Redundancy Check);
+    minimum 64B=512b pour une *trame* ethernet
+  - *signal jam* (brouillage) = collision entre 2 trames; pour l'éviter un
+    message doit avoir une taille minimale, fonction de la plus grande distance
+    entre objets connectés, laquelle est donc limitée; l'appareil le plus
+    éloigné doit recevoir le premier bit avant que le dernier ne soit émis.
+  - les *adresses MAC* (Media Access Control) sont sur 24 bits (4M possiblités)
+    dont les 6 premiers sont l'id du fabriquant et l'avant-dernier indique si
+    l'adresse est globalement unique (pour machines virtuelles) [NB: 48 bits
+    actuellement d'après plusieurs sources en-ligne, ce qui permet de garder
+    l'unicité malgré la prolifération des machines]
+  - *switch* avec des *tables de routage* pour savoir où diriger le message
+    (après avoir "appris" la bonne directin grâce au "broadcast" de chaque
+    nouvelle machine); comme ça toutes les machines ne voient plus tous les
+    messages, ce qui donne un minimum de confidentialité
+  - *internet* utilise une *trame IP* (IP packet) avec IP header + contenu avec
+    ses propres headers; NB: on peut déclarer une fausse adresse source dans
+    l'IP header!
+  - adresses IP: IPv4 32 bits, IPv6 128 bits; l'adresse IP se découpe en LAN
+    adress + local adress, répartis selon p.ex. /20, soit 20 bits pour LAN, le
+    reste pour local.
+  - la *fragmentation* des paquets est possible et indiquée dans l'IP header
+  - *qualité* du service IP: best effort, pas de garantie de livraison, pas de
+    limite de délai de livraison avant arrivée du 1er fragment
+  - un processus demande un *socket* pour communiquer, qui sera "vu" comme un
+    fichier, que ce soit pour UDP ou TCP, et ce via appels système socket(),
+    bind(), connect(); un DNS via l'OS permettra d'obtenir l'IP address
+  - UDP: *datagram* (IP header 17), télégramme de données pour message court
+    1-way; "UDP is almost a null protocol", uniquement checksup et multi-plexage
+    des numéros de port; rapide mais pas fiable, ok pour réseau local
+  - TFTP: *trivial file transfer protocol* de la couche application utilise UDP
+    ave RRQ (read request) puis allers-retours de DATA blocks et ACK
+  - TCP: *transmission control protocol* (IP header 6) livre en *full duplex*
+    ajoute un *TCP header* de 6x32 bits avec seq num, ack num, flags, sliding
+    window size, etc., trames SYN+ACK (sync, acknowledgement) et END; fiable
+    mais pas toujours rapide
+  - HTTP: *hypertext transport protocol* est un protocole en couche application
+    par-dessus TCP, port 80 (ou 443 pour https), avec header+body HTTP dans le
+    message véhiculé par TCP. Le message HTTP est du HTML (avec son propre
+    header + body...)

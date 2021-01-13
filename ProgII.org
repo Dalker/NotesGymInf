@@ -1,0 +1,466 @@
+#+TITLE: Résumé de GymInf Programmation II
+#+AUTHOR: Daniel Kessler
+
+* Concepts communs
+** paramètre / argument
+   = paramètre formel / paramètre effectif
+** opérateurs court-circuit
+   et / ou évaluent seulement autant que nécessaire
+** prog fonctionnelle
+   - machine de Turing (Alan Turing, 1936)
+     -> prog impérative
+   - calcul Lambda (Alonzo Church, années 30)
+     -> prog fonctionnelle
+   - en fait le Lambda vient avant, Turing a fait sa thèse avec Church
+   - les deux modèles sont compatibles
+** paradigmes de programmation
+   - procédural: manipuler sructures de donnée, emphase sur logique correcte et
+     efficace
+   - POO: modéliser un processus, emphase sur définition d'entités et leurs
+     relations; la logique fait directement partie des entités
+   - fonctionnel: permet code concis, fiable et proche d'une approche math
+** Design Patterns
+   composition, adaptor(Mixin)
+** DRY
+   - "Don't Repeat Yourself": un bug ne devrait nécessiter de correction qu'en un
+     seul lieu; pas de "copier/coller"
+   - l'héritage peut aider à éviter la duplication de code
+** Programmation défensive
+   prévoir problèmes liés à l'environnement ou gestion de fichiers
+** Abstraction et modularisation ("divide and conquer")
+   - abstraction: se placer à "haut niveau" et ignorer les détails
+   - modularisation: division en parties bien définies pouvant être construites
+     et analysées séparément; ces parties doivent intéragir de manière bien précise
+** Orienté Objet
+   - metaclasse = "fabrique" < classe = "moule" < instance = "objet"
+   - la classe *factorise* des caractéristiques (état) et tâches (comportements) communs
+   - *attribut* = *champ* [Java] = variable d'instance (vs. variables de classe)
+   - *état*: valeurs (propres à l'instance) stockées dans les champs (communs à la classe)
+   - *méthode d'instance* peut modifier l'instance, retourner une valeur, avoir
+     effets de bord; Python: retourner None si modification de l'instance ou de
+     variables de classe; Java: idée de "recevoir des *messages*", envoyés en
+     invoquant la méthode
+   - *constructeur*: méthode pour initialiser attributs communs (Python: après
+     création par __new__())
+   - Python: *méthodes de classe* (@classmethod), *méthodes statiques* (@staticmethod)
+     Java: *static* correspondent plutôt à des méthodes de classe
+   - *encapsulation*: visible (public) vs. fonctionnement interne (private, __bla)
+     entre deux: interne accessible par classes filles (protected, _bli)
+   - *getters* (= *accesseurs*) / *setters* pour protéger attribut privé
+     en Python: @property / @methode.setter; Java: getFoo(), setFoo()
+** Héritage
+   - *Principe de substitution de Liskov*: une instance de la classe fille peut
+     être utilisée partout où un objet de la classe mêre est attendue
+     -> doit en respecter l'interface pour les méthodes *sauf* le constructeur
+   - il est cependant toujours possible de *surcharger* (*overload*) les
+     méthodes [Java: nouvelle def, Python: kwargs optionnels]), tant que
+     l'interface mère reste aussi disponible, en plus de "surcharger" au sens de
+     simplement redéfinir une méthode avec son interface d'origine, *si* elle
+     n'est pas /private/ (donc protected ou public ok).
+   - Python: *super()* renvoie un "proxy" pour la super-classe, sans la nommer;
+     ses méthodes reçoivent tous les arguments *sauf self*
+   - problème de "dépendance en diamant" résolu en Python via MRO (method
+     resolution order), gauche à droite puis profondeur (cf. Classe.mro()); le
+     cas "croisé" est cependant refusé (lance exception)
+** BDD: modèle relationnel et ORM (object relational mapping)
+   - tables avec colonnes pour attributs et lignes pour instances
+   - relations entre entités via clés (attributs id_...)
+   - langage SQL pour écrire/extraire données
+   - BDD: vision "aplatie" d'une hiérarchie des classes, que pour les données,
+     pas la "logique applicative" de la POO
+   - ORM: object relational mapping - pont entre modèle relationnel BDD et
+     modèle objet POO
+** Fluent Interface (interface fluide)
+   - enchaînement bla.bli().blo().ble()
+   - en Python: possible au départ uniquement pour immuables, dont les méthodes retournent
+   une valeur (nouvelle instance), e.g. chaine.strip().lower()
+** Composition et Mixin
+   - *composition*: ajouter à une classe des méthodes d'autres classes ou stockage
+     de données dans attributs instance d'une autre classe
+   - *mixin*: héritage d'une classe secondaire (via *héritage multiple*) pour
+     ses fonctionnalités supplémentaires (Java: pas possible, sauf pour
+     *interfaces*)
+   - un mixin FooMixin sert d'*adaptateur* entre classes, sans exposer
+     directement des attributs/méthodes de la classe Foo ni "poluer" avec
+     ceux-ci la classe qui hérite du Mixin.
+** Classes abstraites et interfaces
+   - but: préciser le "contrat" de la classe
+   - *interface* (Java: interface, permet héritage multiple): pseudo-classe
+     "vide" définissant des méthodes avec types d'arguments et valeur de retour
+     mais sans leur "corps", servent à l'héritage multiple
+   - *classes abstraites*: (Java: abstract) classe "partielle" pour héritage
+     mais pas instantiation, servent à l'héritage normal
+   - *duck typing* et évolution dynamique (Python) peut nécessiter de capturer
+     *AttributeError* quand on essaye d'accéder à un possible attribut/méthode,
+     jamais garanti.
+     le duck typing de Python remplace les interfaces de Java
+* Python
+** références
+   - pythontutor.com montre contenu de mémoire en cours d'exécution
+** trucs
+   - and / or retournent la dernière valeur évaluée
+     stocke les clés du dict dans un tuple à parenthèses implicites.
+   - for ... else: le else s'exécute si for se termine normalement, sans break
+   - les méthodes modifiant un muable retournent None (e.g. .append())
+   - sys.getsizeof() donne l'espace occupé par un objet en mémoire
+   - timeit.default_timer() retourne le temps actuel en ms
+** fonctions bas-niveau pour examiner objet
+   isinstance(objet, class)
+   issubclass(fille, parent)
+   obj1 is [not] obj2
+   hasattr(objet, "nom")
+** paramètres de fonctions
+   - * sert de "unpacking operator"
+   - / sépare des args obligatoirement positionnels (à gauche) de ceux pour qui
+     kw est permis même si pas valeur par défaut (à droite)
+   - * sépare des args possiblement positionnels (à gauche) d'obligatoirement kw
+     (à droite)
+** introspection des contextes / gestion mémoire
+   - globals(), locals() -> dicts
+   - dir() -> list
+   - id(obj) montre l'identité, liée à l'adressage mémoire
+     is / is not compare les identifiants
+** itérateurs
+   - iter(itérable) et reversed(itérable) retournent un itérateur
+   - next(itérateur) retourne un élément ou lance l'exception StopIteration
+   - "tout ce qui est itérable est descructurable", e.g. a, b, c = mon_dict
+   - enumerate(itérable), zip(itérable, ...) retournent des objets enumarare / zip
+   - 
+** générateurs
+   - (... for ...) est une expression génératrice
+** compréhension
+   - avantages: performant, ne génère pas de variables parasites dans le
+     contexte (contrairement aux boucles)
+
+** Protocoles
+   -rq: NotImplemented est retourné, StopIteration est lancé (raise)
+   protocole = groupe de méthodes pouvant être implémentées par une classe
+   - protocole de *représentation*: __repr__() pour la représentation "officielle"
+     et univoque, __str__() pour la représentatin "informelle" et "jolie"
+     (fallback de str() vers repr())
+   - protocole *numérique*: __add__(), __mul__(), ..., et les *reverse
+     operators* __radd__(), ..., *increment operators* __iadd__(), ...;
+     retourner *NotImplemented* quand calcul pas possible (créera in fine un *TypeError*)
+   - protocole *itérateur*: un *itérable* doit avoir __iter__() et/ou
+     __reversed__() qui renvoie(nt) un itérateur implémentant __next__(), lequel
+     yield des objets puis lance *StopIteration* -> nécessaire pour *for*
+   - protocole *context manager*: __enter__(), __exit__() -> nécessaire pour *with*
+   - protocole *appel de fonction*: __call__()
+   - protocole *container* (collection): __len__() [len(...)], __getitem__()
+     [...[.]], __setitem__() [...[.]=...; prévoir isinstance(index, slice)],
+     __delitem__() [del(...[.])], __missing__() [default in mapping],
+     __contains__() [in]; doivent produire des TypeError si clé du mauvais type
+     et IndexError (*séquences*) ou KeyError (*mappings*) si clé inexistante
+   - protocole de *comparaison*: __eq__(), __lt__(); le décorateur de classe
+     *@functools.total_ordering* crée automatiquement le reste; retourner
+     *NotImplemented* quand la comparaison n'est pas possible
+** opérateurs unaires
+   neg(-), pos(+), abs (abs()), invert (~ "binary invert")
+   int, float, complex
+** Collections Abstract Base Classes (collections.abc.Protocol)
+   - ref: https://docs.python.org/3/library/collections.abc.html
+   - servent à 1) vérifier existence du minimum pour un protocole via des
+     @abstractmethod et 2) comme mixins pour compléter ces protocoles
+   - NB: certains fallbacks sont déjà là, comme __len__() pour __bool__()
+     et @functools.total_ordering pour opérateurs de comparaison
+** Subtilités des classes Python
+   - __new__() est une méthode de classe sans besoin de décorateur; elle crée
+     l'instance qui sera ensuite initialisée par le constructeur __init__()
+   - la définition de classe est un bloc qui s'exécute, donc l'ordre des def
+     peut être important
+   - un *descripteur* est cherché dans le dict d'instance, puis le dict de
+     classe, puis le dict de super-classe
+** functools.
+   [@]total_ordering
+** itertools.
+   - zip_longest(seq1, seq2, fillvalue=...)
+** paradigme fonctionnel en Python
+*** késako
+   impératif: boucles, conditions
+   procédural: idem avec fonctions ("procédures")
+   orienté objet: classes, instances, méthodes
+   fonctionnel: fonctions ("pures"), compréhensions, décorateurs, générateurs
+*** fonction de 1è classe
+   - le paradigme fonctionnel nécessite des capacités spéciales du langage,
+   notamment que les fonctions puissent être utilisées comme des données (1st
+   class functions): on peut les créer dynamiquement, assigner à des variables,
+   passer comme arguments et retourner
+   - en Python, une fonction est un objet et on peut y ajouter des attributs
+   - *fonction d'ordre supérieur* si elle prend une autre fonction comme
+     argument ou retourne une fonction; ex: sorted(séquence, key=foo)
+*** fonctions pures
+    - valeur de retour ne dépend que des arguments (déterministe, pas d'état
+      interne) -> contre-ex: random (non-déterministe), itérateur (état interne)
+    - valeur de retour est un nouvel objet
+    - arguments pas modifiés -> contre-ex: méthode d'instance (self modifié)
+    - rien n'est lu ou modifié à l'extérieur (pas d'effets de bord)
+      -> contre-ex: print(), f.write(), utilisation de globaux
+*** style fonctionnel
+    - toutes les structures sont traitées comme immuables
+    - récursion plutôt que boucles
+    - emphase sur fonctions pures et simples, avec composition
+      -> plus simple à comprendre qu'en impératif
+      -> très facile à tester car déterministe -> unit testing aisé (module unittest)
+    - expressions plutôt que déclarations
+    - en exécution *concurrente* (plusieurs *threads*) évite des tas de soucis
+      liés normalement aux muables modifiés par deux threads en ordre
+      indéterminé (autrement, il faut utiliser des *locks*)
+    - limitation: on a en fait besoin d'effets de bord pour faire qq chose d'utile
+    - limitation: immuables peuvent être coûteux à répliquer (mem et cpu)
+** fonctions anonymes lambda
+   lambda args: expression
+** map, filter, functools.reduce et réducteurs prédéfinis: sum, all, any
+   - map(fonction, itérable) -> itérable applique la fonction aux itérables
+   - filter(fonction bool,  itérable) -> sélectionne des éléments
+   - ft.reduce(fonction, itérable, init=0) -> valeur
+   - all vrai si tous vrais, any vrai si au moins un vrai
+   - penser à les composer!
+** compréhensions à la place de map et filter
+   - c'est à choix, parfois la composition en fonctionnelle est plus lisible,
+   parfois la compréhension plus compacte
+   - list(map(..., filter(..., ...)) devient
+     [... for ... in ... if ...] (dans cet ordre)
+** itérateurs
+   - *itérateur* = fonction ou objet qui renvoie toujours l'élément suivant
+     l'itérateur a donc un "état caché" - semble pas "fonctionnel", mais
+     l'itération complète est bien déterministe (reproductible).
+   - flux / *stream* = séquence infinie, soit mathématique soit de données externes
+   - exemples de fonctions renvoyant de nouveaux itérables:
+     - fonctionnant avec séquences infinies: map(), filter(), zip(), enumeate()
+     - ne fonctionnant pas avec séquences infinies: sorted(), reversed()
+   - implémentation possible d'un itérateur: Classe avec __init__() créant état
+     intial, __iter__() retournant une nouvelle instance de la classe et
+     __next__() retournant élément suivant -> permet /for obj in Classe(): .../
+** modules fonctionnels: operator, itertools, functools
+   - operator: lt(a, b), ..., not(o), is(o), truth(o), add(a, b), ...
+     -> utiles pour filter, map, ft.reduce
+   - itertools: 
+     - itérateurs infinis: cycle(it), repeat(obj), count(init=0, step=1)
+     - its sur séq finies: compress(seq, truths), chain(seq,
+       seq2,...), dropwhile(fun, seq), zip_longest(seq,..., fillvalue=None)
+     - combinatoires: product(seq1, seq2), permutations(), combinations()
+** expressions génératrices (... for ... in ...)
+   - comme compréhension de liste mais avec () au lieu de []; crée un générateur
+     qui génère les éléments à la demande
+   - iter(gen) permet d'obtenur un itérateur à partir d'un générateur,
+     utilisable par next(it)
+** fonctions génératrices (yield)
+   - l'appel à une fonction avec yield retourne un objet générateur (comme celui
+   retourné par une expression génératrice); on peut aussi utiliser iter() pour
+   en tirer un itérateur
+** générateur (généré par expression ou fonction génératrice)
+   - définit __iter__() et __next__()
+   - sert surtout à construire des itérateurs, via iter(gen)
+   - renvoie des données à la demande: *lazy*, ce qui est utile pour définir des
+     données en flux et pour implémenter des pattens de type
+     producteur/consommateur pour des *coroutines*
+** fonctions "internes" (nested)
+   - on peut définir une fonction dans une autre; elle disparait à la fin de la
+     fonction contenante à moins d'être retournée
+   - la fonction interne peut lire le scope global et le scope de la fonction
+     contenante; pour modifier une variable définit dans les scopes supérieurs
+     il lui faut déclarer cette variable comme *nonlocal*, resp. global; global
+     permet aussi de créer une nouvelle variable, mais nonlocal pas
+** Closure
+   - closure = fonction avec accès à un contexte personnel caché
+   - une fonction retournée par une autre conserve encore un accès au contexte
+     dans laquelle elle a été définie, dans l'état de ce contexte au moment du
+     retour
+   - rq: on peut aussi retourner un lambda au lieu d'utiliser un def interne
+** Curryfication
+   - f(x, y) <-> g(x)(y), nommé ref Haskell Curry
+   - g() est une *application partielle*, qui renvoie une fonction
+   - la curryification peut être faite dans l'un ou l'autre sens
+** décorateurs
+   - *métaprogrammation*: code manipule code
+   - décorateurs: encapsule fonction d'origine
+   - utile pour *encapsuler* une fonction "pure" ou fonction à laquelle dont on
+     n'a pas accès au code
+   - un décorateur est une fonction qui reçoit une fonction à décorer comme
+     unique argument puis définit et retourne une fonction interne qui reçoit
+     des *args et **kwargs et les passe à la fonction reçue en argument. Cette
+     fonction interne peut donc du coup faire des choses avant et après l'appel
+     à la fonction d'origine.
+   - foo = decorateur(foo) peut être remplacé par @decorateur def foo(..): ..
+   - on peut bien sûr faire la même chose avec une classe, qui est aussi passée
+     en argument au décorateur, qui doit ensuite retourner la classe décorée
+   - pour une fonction, le décorateur peut bien sûr agir sur le résultat ou les
+     arguments de la fonction d'origine
+** pour aller plus loin...: prog concurrente et coroutines
+* Java
+** généralités et trucs
+   - .java -compilé-> .class, "bytecode" exécutable dans machine virtuelle
+   - classe = en-tête + {champs; constructeurs; méthodes}; méthode = signature + corps
+   - modificateurs de visibilité: private, protected, public
+   - tous les champs sont initialisés à *null*, ce qui peut être testé
+   - portée = scope: bloc
+   - foreach correspond au for de Python
+   - les objets de classes (types non primitifs) sont instantiés par l'opérateur *new*
+   - *signature* de méthode: [public] [static] typeRetour nomMethode(typeParam nomParam, ....)
+     vs. *appel* nomInstance.nomMethode(arg, ...)
+     typeRetour est obligatoire, *void* si ne retourne rien
+   - une *expression* représente une valeur typée (donc si le résultat est void,
+     ce n'est pas une expression [vs. Python None où ça en est une])
+   - *maths*: concat +, modulo % comme Python, mais Math.pow(a, b) au lieu de
+     a**b et pas de str*int
+   - *opérateurs logiques* && || !
+   - *surcharge*: même nom de méthode avec différents arguments, notamment pour le constructeur
+   - *constructeur* this() appelle autre constructeur, en 1è ligne uniquement
+   - *I/O*: System.out.println(...); 
+   - *portée*: bloc de classe pour champs; bloc de déclaration pour variables
+     locales, y compris paramètres; durée de vie de variable = durée de vie de
+     portée (exécution de bloc ou objet contenant champ)
+     -> "la portée est statique, la durée de vie est dynamique"
+   - MaClasse foo = bar fait pointer foo vers l'espace de mémoire pointé vers bar
+     vs. MaClasse foo = new MaClasse() qui crée un nouvel objet
+   - + peut concaténer un String à un int
+** méthodes spéciales
+   - boolean equals (MaClasse autreObjet) pour comparer instances
+     arbitrairement, tandis que == compare l'espace mémoire mémoire (comme
+     Python "is")
+** this
+   - this représente l'objet courant (Python: self) et peut être omis s'il n'y a
+     pas d'ambigüité (this.foo sert à distinguer d'une variable locale/argument foo)
+   - this() est un appel à un constructeur depuis un autre (en 1è ligne)
+** types primitifs    
+   - entiers: int, long, char
+   - décimaux: float, doucle
+   - boolean
+   - null (=None de Python)
+** classes standard
+   - *Math* contient des méthodes de classe Math.PI, Math.abs(), Math.cos(), ...
+   - *System.out* contient println()
+   - *System.in* est à fournir à Scanner
+
+** structures de contrôle
+   - if (condition) {bloc}
+   - for (initialisation; condition; après corps) {bloc}
+     -> init peut contenir une déclaration de variable (avec type), qui sera
+     locale à la boucle
+   - while (condition) {bloc}
+   - do {corps} while (condition)
+** collections d'objets
+   - ordonnée ou pas? nombre d'éléments fixe? 
+   - *tableaux* (Arrays): collections d'objets numérotés du même type en taille fixe
+     -> temps d'accès O(1)
+     syntaxe: /Type[] tableau; tableau = new Type[n];/
+     initialisation automatique des éléments (par exemple à 0 si Type == int)
+     champ public read-only: *tableau.length* -> indices de 0 à tab.length - 1
+     multi-dim: /tab[][] ...; ... new ...[m][n];
+   - notation compacte pour tableaux:
+     Type tableau[] = {obj1, obj2, ...}
+     for (Type obj : tableau){.... obj...}
+   - *ArrayList* à importer du package *java.util*
+     syntaxe: /ArrayList<Type> alist; alist = new ArrayList<>();/
+     méthodes: add(objet), size(), get(index), remove(index)
+** java.util
+   - un package (paquetage) regroupe des classes; java.util contient des classes
+     *Collection*, ex: listes (déjà vu), ensembles, dictionaires; ces types sont
+     paramétrés par le type stocké à l'intérieur de la collection,
+     e.g. ArrayList<Person>
+   - Il faut utiliser des *types objet* dans les collections (les types primitifs
+     sont interdit), permettant de tester null et ce genre de choses. Chaque
+     type primitif a son équivalent objet: Integer, Double, Boolean,... pour
+     int, double, boolean,...
+     ex: Integer obj = new Integer(5) [ *boxing* ]
+         int x = obj.intValue() [ *unboxing* ]
+	 pour les collections, *auto-boxing* implicite avec add et get
+   - ArrayList<Type> -> .add(), .get(), .size(), .remove()
+   - Toutes les collections ont une méthode *.iterator()* qui renvoie un
+     *Iterator<Type>* qui a les méthodes indispensables *.hasNext()* pour
+     condition de while et *.next()* pour attraper un élément.
+   - syntaxe de type "foreach": /for(Type objet : collection) {...objet...}/
+   - it.remove() enlève l'élément courrant de la collection
+   - *HashMap<KeyType, ValueType>* est un dictionnaire -> .put(k, v), .get(k)
+     (peut résulter en null - c'est pour ça qu'il faut que le Type ne soit pas
+     primitif)
+   - *HashSet<Type>* est un ensemble
+** bibliothèques de classes
+   - les classes de java.lang sont disponibles sans import (ex: String,
+     Integer,...)
+   - les autres classes doivent être importées, e.g. import java.util.ArrayList;
+     voire import java.util.*;
+   - Connaître: Streamer, ArrayList
+   - Savoir comment trouver info sur autres: API
+     https://docs.oracle.com/en/java/javase/11/docs/api/index.html
+   - in-doc: interface: nom de classe, description, liste de constructeurs et
+     méthodes, valeur de retour et paramètres de ceux-ci
+   - hors-doc: mise en oeuvre: champs et méthodes privés, corps des méthodes
+   - java.util a aussi un Random avec la méthode nextInt(bound)
+** String (documenté dans java.lang)
+   trim(), toLowerCase(), startsWith(), ...
+** Scanner (de java.util)
+   Scanner stdin = new Scanner(System.in)
+   String foo = stdin.nextLine()
+** Associations (maps), ici HashMap
+   .put(clé, valeur), .get(clé)
+** Documenter ses propres classes
+   - à documenter :nom, but général, no. version, auteurs, doc constructeurs et
+     méthodes
+   - doc méthodes: nom, type retour, noms et types paramètres,
+     desc. comportement, desc. paramètres, desc. valeur retour
+   - javadoc: 
+     /**
+      * bla
+      * bli
+      * 
+      * @author Jean Dupont
+      * @version ...
+      */
+   - pour méthodes @param nom explication, @return explication
+   - tout ce qui est public sera traité par javadoc
+
+** héritage et polymorphisme
+   - /class Foo extends Bar/, uniquement héritage simple
+   - constructeur de sous-classe a accès au constructeur de super-classe avec
+     *super(...)* (ça ressemble un peu à this(...)); s'il n'est pas explicite, 
+     l'appel à super() sans paramètre se fait quand même, au début
+   - pour les méthodes surchargées, *super.method(...)* appelle la méthode de la
+     superclasse
+   - *polymorphisme*: /SuperClasse nomVar = new SousClasse();/ est permis on
+     peut affecter un objet d'un sous-type à une variable d'un supertype
+   - *transtypage* ou *type cast* (Type) bla -> force une transformation de type
+     si on sait que c'est compatible (utile si perte de type à cause du
+     polymorphisme)
+   - toutes les classes dérivent d' *Object* (par défaut, "extends Object")
+     => permet le polymorphisme des collections, qui se basent tous sur ce type
+     racine; le degré de polymorphisme peut être limité par <Type>
+   - *protected* visible des sous-classes mais pas de l'extérieur
+** type statique vs dynamique et polymorphisme
+   - ex: Vechicle v1 = new Car();  (avec Car -|> Vehicle)
+     type statique est celui déclaré, ici Vehicle
+     type dynamique est celui de l'objet référencé, ici Car
+   - le compilateur vérifie les violations de type statique (donc de superclasse)
+     surcharge: une méthode de superclasse, dont l'existence est vérifiée par le
+     compilateur (type statique) peut être surchargée par la classe fille
+   - le choix de méthode en cas de polymorphisme dépend du type dynamique
+     (toujours en remontant la chaîne d'héritage jusqu'à trouver une version de
+     la méthode)
+   - (obj *instanceof* Classe) détermine le type dynaique, utile avant
+     transtypage; donnera vrai pour toutes les classes de la hiérarchie d'héritage
+** méthodes héritées de Object utiles à surcharger
+   - .toString() [équivaut à .__str__(), auto-appellée par println]
+   - .equals(other)
+** abstract methods / abstract classes
+   - "super-classe incomplète"
+   - classe abstraite ne servira que de super-classe; elle factorise ce qui est en
+     commun de sous-classes, mais ne sera pas instantiée et n'a pas de mise en
+     oeuvre évidente
+   - abstract method: mot-clé abstract, pas de corps, juste un ";"
+   - les sous-classes concrètes doivent impérativement surcharger les méthodes
+     abstraites
+** héritage multiple avec interfaces
+   - "classe purement abstraite" gérant le polymorphisme
+   - l'interface est une version restreinte d'une classe abstraite
+     -> *interface* au lieu de "class", *implements* au lieu de "extends"
+   - ne déclare que des méthodes abstraites et publiques (implicitement, pas
+     besoin d'écrire abstract et public)
+   - pas de constructeur
+   - champs publics, statiques et finaux (càd constantes), donc pas d'état
+   - très utile pour spécifications
+   - on peut déclarer un objet avec une interface
+     e.g. "List foo = new ArrayList<Type>" (List est une interface)
+** excpetions
+   - throw, catch
+   - sous-classes de Exception (sous contrôle, anticipable, récupérable) ou
+     RuntimeException (non prévisible, pas tellement récupérable)

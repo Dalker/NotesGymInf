@@ -1,0 +1,35 @@
+#+TITLE: Notes sur le chemin de données
+#+AUTHOR: Dalker (daniel.kessler@dalker.org)
+
+* notes de https://www.cs.umd.edu/~meesh/cmsc411/CourseResources/CA-online/chapter/execution-of-a-complete-instruction-datapath-implementation/index.html
+  - MIPS: adressage 32 bits, 32 GPRs (general purpose registers), 32 FPRs
+    (floating point registers), FP status register, modes d'adressage:
+    immediate, displacement, register (utilisé uniquement par ALU)
+  - instructions de type I: 6 bits opcode, 5b Rs, 5b Rt, 16b immediate
+  - instructions de type R: 6 bits opcode, 5b Rs, 5b Rt, 5b Rd, 5b shamt, 6b funct
+  - instructions de type J: 6 bits opcode, 26b offset
+  - les instructions font de la gestion de mémoire, de l'arithmétique/logique et
+    des embranchements
+  - un cycle d'instruciton fait: *fetch instruction* from memory, *decode*
+    instruction, *fetch operands*, *exectute* instruction, *write result*
+  - *fetch/decode instr* c'est toujours pareil: *program counter* (PC) pointe
+    vers l'*instruction memory* au bon endroit et attrape l'instruction
+  - *fetch operands* c'est toujours pareil: lire un (pour load word) ou deux
+    (pour presque tous les autres cas)
+  - l'*arithmetic and logical unit* (ALU) est utilisé pour toutes les
+    intructions excepté jump (load/store mem-ref pour calculer une adresse,
+    arithmétique/logique pour calculs, embranchement pour évaluer comparaison)
+  - une comparaison est utilisée en cas d'embranchement pour déterminer si le PC
+    doit être incrémenté de 4 pour l'adresse suivante ou faire autre chose
+  - des *multiplexers* (MUX) sont nécessaires pour branchement de plusieurs
+    inputs possibles arrivant au même endroit
+  - des *lignes de contrôle* gèrent tout ça
+  - un signal d'horloge (*clock signal*) détermine quand il faut mettre à jour
+    les valeurs de manière séquentielle (notamment les registres)
+  - l'*opcode* géré par le control décide ce qui est fait avec les registres
+  - *branch on equal* est une instruction qui fournit 2 registres à comparer et
+    un offset qui remplacera le PC si la comparaison donne True ("the branch is
+    taken"); le bout de l'instruction "offset" est étendu de 16 à 32 bits et
+    décalé comme il faut puis ajouté à la valeur prévue du PC pour créer le
+    "branch target" qui sera pris si la comparaison l'ordonne
+ 
