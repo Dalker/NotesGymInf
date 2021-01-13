@@ -1,0 +1,66 @@
+#+TITLE: Résumé d'ordre 2 de Prog II
+#+AUTHOR: Dalker (daniel.kessler@dalker.org)
+
+* trucs
+  - *and* et *or* sont des /opérateurs court-circuit/ (évaluation seulement
+    autant que nécessaire)
+  - (P) la *fluent interface* bli.bla().blo() n'est possible que pour les
+    immuables (dont les méthodes retournent une nouvelle instance), tandis que
+    les méthodes modifiant un muable retournent /None/
+  - (P) *else* après une boucle (while ou for) s'exécute après une terminaison
+    normale (sans break)
+  - (P) * sert d'*unpacking operator* pour détupler une séquence, et ** un dict
+  - (P) args de fonction obligatooirement positionnels, /, normaux, *,
+    obligatoirement by keyword
+* paradigmes
+  - *procédural*: manipuler sructures de donnée, emphase sur logique correcte et efficace
+  - *POO*: modéliser un processus, emphase sur définition d’entités et leurs relations; la logique fait directement partie des entités
+  - *fonctionnel*: permet code concis, fiable et proche d’une approche math
+* bonnes habitudes
+  - *DRY* (Don't Repeat Yourself): un bug ne devrait nécessiter de correction
+    qu’en un seul lieu; pas de “copier/coller”; l’héritage peut aider à éviter
+    la duplication de code
+  - *divide and conquer*: diviser en parties bien définies pouvant êtres
+    construites et analysées séparément (modularisation)
+  - *programmation défensive*: prévoir problèmes liés à l'environnement ou la
+    gestion de fichiers
+  - *abstraction*: se placer à "haut niveau" et ignorer les détails
+* voc OO
+  - metaclasse, classe, instance ("fabrique, moule, objet"); la classe
+    *factorise* des caractéristiques (états) et tâches (comportements) communs
+  - *état*: valeurs (propres à l'instance) dans *champs* (communs à la classe)
+    [J: champ = P: attribut]
+  - *comportement*: méthotes d'instance, de classe (P:@classmethod, J:static),
+    statiques (P:@staticmethod)
+  - *encapsulation* visible (public) vs interne (J:protected, P:_foo et J:private, P:__bar)
+  - *getters* (accesseurs) (J:getFoo(), P:@property def foo():) et *setters*
+    (J:setBar(type param), P:@foo.setter def foo(param):)
+  - *héritage* avec *principe de substitution de Liskov* (instance de classe
+    fille peut être utilisée partout où objet de classe mère est attendue =>
+    respecter interface /sauf/ pour constructeur)
+  - *surcharge* (overload) de méthode par dessus la méthode mère avec même
+    interface (invoquer P:super().foo(), J:super.foo() si pertinent) et
+    possiblement aussi autres interfaces (J:défintion séparée, P:*args,
+    **kwargs, assurer que l'interface précédente reste valable pour Liskov)
+    (*super* est un *proxy* de super-classe)
+  - une *classe abstraite* n'est pas instantiable mais on peut en hériter (elle
+    aura au moins une *méthode abstraite*)
+  - une *interface* (J) est une pseudo-classe "vide" ne définissant que des
+    signatures de méthodes statiques et publiques (sans mots-clés static
+    public); elles sont disponibles pour héritage multiple en Java (P:
+    collections.abc.* jouent un peu ce rôle en vérifiant/complétant les
+    "protocoles" de fonctions spéciales)
+* design patterns
+  - *composition*: ajouter à une classe des méthodes d'autres classes et/ou
+    stocker des données dans une instance d'une autre classe
+  - *mixin* (*adapteur*): héritage multiple (P) d'une classe FooMixin donnant
+    accès à une classe Foo sans l'exposer directement ni poluer la classe fille
+
+* Python "bas-niveau"
+  - examiner objet: isisnstance(obj, cls), issubclass(fille, parent),
+    hasattr(obj, "nom")
+  - introspection du contexte: dicts globals(), locals() et list dir()
+  - adresse mémoire: id(obj)
+  - taille: sys.getsizeof(obj)
+
+[...]
