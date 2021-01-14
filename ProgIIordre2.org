@@ -153,3 +153,5 @@
     n'a pas accès directement 
 ** ce qui manque: prog concurrente et coroutines
 * Java
+  pas encore résumé:
+  voir https://github.com/Dalker/notes_GymInf/blob/main/ProgII.org#java
