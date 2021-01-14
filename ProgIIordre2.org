@@ -153,5 +153,75 @@
     n'a pas accès directement 
 ** ce qui manque: prog concurrente et coroutines
 * Java
-  pas encore résumé:
-  voir https://github.com/Dalker/notes_GymInf/blob/main/ProgII.org#java
+** particularités / différences avec Python
+   - this / super au lieu de self / super()
+   - types primitifs: char/byte/int/long, float/double, boolean, null
+   - les champs non primitifs sont en fait des pointeurs, vers un objet déjà
+     existant ou un nouvel objet créé avec *new*; si non initialisé, leur valeur
+     est *null* (/i.e./ null pointer)
+   - la portée (scope) est le bloc {...}, donc for, if, etc. ont leur propre
+     scope
+   - une *expression* est une valeur typée, donc si le résultat est *void*, ce
+     n'est pas une expression (dans Python, pas de void, c'est au moins None)
+   - pas de répétition str*int
+   - &&, ||, ! au lieu de and, or, not
+   - on peut concaténer str + int ou str + float directement
+   - structures principales: if(){}, for(;;){}, while(){}, do{}while(), switch(){case:...}
+   - *surcharge* de méthode avec nouvelle signature et nouveau corps (au lieu de
+     gérer des *args / **kwargs)
+   - *this()* appelle un constructeur depuis un autre, mais uniquement en 1è
+     ligne
+   - javadoc /** ... */* avec @author / @version ou @param / @return; seulement
+     ce qui est public sera extrait par javadoc
+** classes simples pré-existantes utiles
+   - les classes de java.lang sont disponibles sans import (cf. les 4 qui suivent)
+   - *String* avec méthodes .trim(), .toLowerCase(), .startsWith(), ...
+   - *Integer*, ...
+   - *Math* fournit des constantes et méthodes statiques, telles *.pow(a, b)*, *.PI*, *.abs()*,
+     *.cos()*, ...
+   - *System* fournit *.in* et *.out*, lequel a les méthodes *.print()* et *.println()*
+   - *java.util.Scanner* permet de lire la console, de manière assez encombrante:
+     import java.util.Scanner; Scanner stdin = new Scanner(System.in);
+     stdin.nextLine(); (ou stdin.nextInt(), etc.)
+   - *java.util.Random* doit être instantiée puis donne accès à *.nextInt(n)*, ...
+** méthodes spéciales héritées de Object
+   - boolean equals (MaClasse autreObjet) pour comparer contenus (vs. == pour
+     comparer espace mémoire, /i.e./ == java est comme /is/ de Python)
+   - String toString() équivaut à __str__()
+** collections
+   - tableaux (arrays): *Type[] tab; tab = new Type[n]* ou 
+     *Type[] tab = {obj1, obj2, ...}*, avec notation [.], possible aussi en
+     multi-dimensionnel [m][n] et champ *.length*
+   - import java.util.Arrays permet Array.asList(arr) qui aura .contains(), etc.
+   - *java.util.ArrayList* permet ArrayList<Type> avec méthodes .add(obj), .get(n),
+     .size() et .remove(n)
+   - itérable implicite avec *for(Type obj : collection)* ou bien explicite avec
+     *it = collection.iterator()* qui donne un *Iterator<Type>* avec
+     *.hasNext()*
+   - *java.util.HashMap<KeyType, ValueType>* avec .put(k, v), .get(k)
+   - *java.util.HashSet<Type>*
+** héritage/polymorphisme
+   - toutes les classes dérivent de *Object*
+   - class Bla extends Bli, uniquement héritage simple
+   - dans constructeur, *super()* est appellé automatiquement au début
+   - *polymorphisme* SuperClasse nomVar; nomVar = new SousClase(); (type déclaré
+     = "type statique", type instantié = "type dynamique"); choix de méthode
+     part du type dynamique puis remonte si nécessaire la chaîne d'héritage
+   - *transtypage* = type cast:  (Type) bla, force transformation de type pour
+     /e.g./ retrouver type perdu par polymorphisme; obj *instanceof* Class est
+     utile avant un cast (c'est un opérateur!)
+   - une classe *abstract* est une classe incomplète, non instantiable, qui peut
+     avoir des méthodes *abstract* (doivent être surchargées)
+   - une *interface* est une "classe purement abstraite"; une class *implements*
+     (au lieu de extends) une interface et peut en implémenter plusieurs; toutes
+     ses méthodes sont autommatiquement et obligatoirement abstraites et
+     publiques; pas de constructeur; les champs éventuels sont publics,
+     statiques et finaux (i.e. constantes, pas état); le polymorphisme permet de
+     déclarer un objet avec une interface
+** exceptions
+   - throw / catch au lieu de try / except
+   - sous-classes de Exception (anticipables, récupérables) ou RuntimeException
+     (imprévisibles, souvent pas récupérables)
+** pour aller plus loin
+   - autres classes:  https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Object.html
+
