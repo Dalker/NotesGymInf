@@ -9,9 +9,12 @@
     les méthodes modifiant un muable retournent /None/
   - (P) *else* après une boucle (while ou for) s'exécute après une terminaison
     normale (sans break)
-  - (P) * sert d'*unpacking operator* pour détupler une séquence, et ** un dict
+  - (P) * sert d'*unpacking operator* pour détupler une séquence, et ** un mapping
   - (P) args de fonction obligatooirement positionnels, /, normaux, *,
     obligatoirement by keyword
+  - (P) les variables définies dans les boucles parasitent le scope, mais pas
+    celles définies dans une compréhension
+  - (P) les blocs de définition sont du code qui s'exécute, l'ordre est important
 * paradigmes
   - *procédural*: manipuler sructures de donnée, emphase sur logique correcte et efficace
   - *POO*: modéliser un processus, emphase sur définition d’entités et leurs relations; la logique fait directement partie des entités
@@ -25,13 +28,16 @@
   - *programmation défensive*: prévoir problèmes liés à l'environnement ou la
     gestion de fichiers
   - *abstraction*: se placer à "haut niveau" et ignorer les détails
-* voc OO
+* paradigme "orienté objet"
   - metaclasse, classe, instance ("fabrique, moule, objet"); la classe
     *factorise* des caractéristiques (états) et tâches (comportements) communs
   - *état*: valeurs (propres à l'instance) dans *champs* (communs à la classe)
     [J: champ = P: attribut]
   - *comportement*: méthotes d'instance, de classe (P:@classmethod, J:static),
     statiques (P:@staticmethod)
+  - *proxys* (P) self, super(), (J) this, super
+  - *constructeur*: (J) MaClasse(), P() __init__(self)
+  - *meta-constructeur*: (P) __new__(), méthode de classe (sans décorateur @classmethod)
   - *encapsulation* visible (public) vs interne (J:protected, P:_foo et J:private, P:__bar)
   - *getters* (accesseurs) (J:getFoo(), P:@property def foo():) et *setters*
     (J:setBar(type param), P:@foo.setter def foo(param):)
@@ -42,7 +48,6 @@
     interface (invoquer P:super().foo(), J:super.foo() si pertinent) et
     possiblement aussi autres interfaces (J:défintion séparée, P:*args,
     **kwargs, assurer que l'interface précédente reste valable pour Liskov)
-    (*super* est un *proxy* de super-classe)
   - une *classe abstraite* n'est pas instantiable mais on peut en hériter (elle
     aura au moins une *méthode abstraite*)
   - une *interface* (J) est une pseudo-classe "vide" ne définissant que des
@@ -57,10 +62,33 @@
     accès à une classe Foo sans l'exposer directement ni poluer la classe fille
 
 * Python "bas-niveau"
-  - examiner objet: isisnstance(obj, cls), issubclass(fille, parent),
+  - examiner objet: isinstance(obj, cls), issubclass(fille, parent),
     hasattr(obj, "nom")
-  - introspection du contexte: dicts globals(), locals() et list dir()
-  - adresse mémoire: id(obj)
-  - taille: sys.getsizeof(obj)
-
+  - *introspection* du contexte: dicts globals(), locals() et list dir()
+  - un *descripteur* est cherché dans dict d'instance, puis dict de classe, puis
+    dict de super-classe
+  - mémoire: id(obj), sys.getsizeof(obj)
+* Protocoles en Python
+  - *représentation* (pour str() et repr()): __repr__(), __str__()
+  - *numérique* (pour +, *, ..., +=, ...): __add__(), __mul__(),... ,
+    __radd__(), ..., __iadd__(), ...
+    + unaires: __neg__() (-), __pos__() (+), __invert__() (~), __abs__(),
+      __int__(), __float__(), __complex__(), __bool__() [fallsback to len]
+    return *NotImplemented* quand calcul pas possible (auto-lever *TypeError*)
+  - *comparaison* (pour ==, <, ...): __eq__(), __lt__() + *@functools.total_ordering*
+    return *NotImplemented* quand comparaison pas possible (auto-lèver *TypeError*)
+  - *itérable* (pour for):  __iter__(), [__reversed__()] => *itérateur*: __next__()
+    l'itérateur peut être self, __next__() doit raise *StopIteration* pour terminer
+  - *container* (pour in, len, [.]): __len__(), __getitem__(), __setitem__(),
+    __delitem__(), __missing__(), __contains__()
+    raise *IndexError* (séquences) ou *KeyError* (mappings) depuis les __*item__()
+  - *appel de fonction* (..()): __call__()
+  - *context manager* (with): __enter__(), __exit__()
+  - *collections.abc.Protocol*
+    (https://docs.python.org/3/library/collections.abc.html) vérifient si
+    minimum présent et complètent les protocoles
+* à mettre au bon endroit
+** itérateurs
+   - iter(itérable), reverse(itérable), enumerate(itérable), zip(itérable,...) -> itérateurs
+   - next(itérateur) -> objet ou raise StopIteration
 [...]
