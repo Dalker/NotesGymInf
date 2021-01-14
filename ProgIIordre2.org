@@ -1,20 +1,6 @@
 #+TITLE: Résumé d'ordre 2 de Prog II
 #+AUTHOR: Dalker (daniel.kessler@dalker.org)
 
-* trucs
-  - *and* et *or* sont des /opérateurs court-circuit/ (évaluation seulement
-    autant que nécessaire)
-  - (P) la *fluent interface* bli.bla().blo() n'est possible que pour les
-    immuables (dont les méthodes retournent une nouvelle instance), tandis que
-    les méthodes modifiant un muable retournent /None/
-  - (P) *else* après une boucle (while ou for) s'exécute après une terminaison
-    normale (sans break)
-  - (P) * sert d'*unpacking operator* pour détupler une séquence, et ** un mapping
-  - (P) args de fonction obligatooirement positionnels, /, normaux, *,
-    obligatoirement by keyword
-  - (P) les variables définies dans les boucles parasitent le scope, mais pas
-    celles définies dans une compréhension
-  - (P) les blocs de définition sont du code qui s'exécute, l'ordre est important
 * paradigmes
   - *procédural*: manipuler sructures de donnée, emphase sur logique correcte et
     efficace
@@ -64,6 +50,20 @@
   - *mixin* (*adapteur*): héritage multiple (P) d'une classe FooMixin donnant
     accès à une classe Foo sans l'exposer directement ni poluer la classe fille
 
+* trucs Python
+  - *and* et *or* sont des /opérateurs court-circuit/ (évaluation seulement
+    autant que nécessaire)
+  - la *fluent interface* bli.bla().blo() n'est possible que pour les
+    immuables (dont les méthodes retournent une nouvelle instance), tandis que
+    les méthodes modifiant un muable retournent /None/
+  - *else* après une boucle (while ou for) s'exécute après une terminaison
+    normale (sans break)
+  - * sert d'*unpacking operator* pour détupler une séquence, et ** un mapping
+  - args de fonction obligatooirement positionnels, /, normaux, *,
+    obligatoirement by keyword
+  - les variables définies dans les boucles parasitent le scope, mais pas
+    celles définies dans une compréhension
+  - les blocs de définition sont du code qui s'exécute, l'ordre est important
 * Python "bas-niveau"
   - examiner objet: isinstance(obj, cls), issubclass(fille, parent),
     hasattr(obj, "nom")
