@@ -1,5 +1,5 @@
 #+TITLE: Résumé de GymInf Programmation II
-#+AUTHOR: Daniel Kessler
+#+AUTHOR: Dalker (daniel.kessler@dalker.org)
 
 * Concepts communs
 ** paramètre / argument

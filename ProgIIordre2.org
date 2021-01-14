@@ -16,9 +16,12 @@
     celles définies dans une compréhension
   - (P) les blocs de définition sont du code qui s'exécute, l'ordre est important
 * paradigmes
-  - *procédural*: manipuler sructures de donnée, emphase sur logique correcte et efficace
-  - *POO*: modéliser un processus, emphase sur définition d’entités et leurs relations; la logique fait directement partie des entités
-  - *fonctionnel*: permet code concis, fiable et proche d’une approche math
+  - *procédural*: manipuler sructures de donnée, emphase sur logique correcte et
+    efficace
+  - *POO*: modéliser un processus, emphase sur définition d’entités et leurs
+    relations; la logique fait directement partie des entités
+  - *fonctionnel*: fonctions "pures", simples, composables et manipulables
+    dynamiquement; permet code concis, fiable et proche d’une approche math
 * bonnes habitudes
   - *DRY* (Don't Repeat Yourself): un bug ne devrait nécessiter de correction
     qu’en un seul lieu; pas de “copier/coller”; l’héritage peut aider à éviter
@@ -87,8 +90,66 @@
   - *collections.abc.Protocol*
     (https://docs.python.org/3/library/collections.abc.html) vérifient si
     minimum présent et complètent les protocoles
-* à mettre au bon endroit
-** itérateurs
+* programmation fonctionnelle (P)
+  - le fonctions sont *de 1è classe*, manipulables comme des données,
+    dynamiquement
+  - (P) une fonction peut se voir attribuer des *attributs*
+  - une fonction est d'*ordre supérieur* si elle reçoit en arguement ou retourne
+    une fonction (ex (P): sorted(seq, key=fun))
+  - *metaprogrammation*: code manipule code
+  - une fonction est *pure* si elle est *déterministe*, *sans état interne* et
+    *sans effets de bord*
+  - une fonction peut être *anonyme* ((P): lambda)
+  - en style fonctionnel, on privilégie l'immuabilité des données, la récursion
+    (plutôt que les boucles), la composition de fonctions pures et simples
+    (faciles à unit-tester), les expressions (plutôt que les déclarations);
+    l'immuabilité est notamment utile en exécutrion *concurrente*
+    (*multi-thread*) afin d'éviter le recours aux *locks*, mais l'immuabilité et
+    la récursivité ont des coûts (cpu et mem)
+  - fonctions 1è classe principales: *map*(f, it), *filter*(f, it),
+    *functools.reduce*(f, it, init=0)
+  - "reduce" pré-existants: any(it), all(it)
+  - map/filter en *compréhension*: [... for ... in ... if ...] (!ordre
+    important!)
+  - *curryification*: f(x, y) <-> g(x)(y), donc passage vers ou d'une
+    *application partielle*
+** itérateurs (P)
+  - *itérateur* = fonction/objet qui garde un "état caché" et renvoie l'élément
+    suivant /next(it)/ ou raise *StopIteration* quand il est invoqué. Malgré
+    l'état interne, la séquence complète est bien déterministe.
+  - flux / *stream* = itérateur infini; ils peuvent être manipulés par map(),
+    filter(), zip() et enumerate()
+  - sorted() et reversed() ne peuvent manipuler que des itérateurs finis
+  - un *itérable* a une méthode __init__() qui retourne un itérateur,
+    possiblement lui-même (s'il a une méthode __next__())
+  - *itertools* fourit entre autres: cycle(it), repeat(obj), count(init=0,
+    step=1), compress(seq, truths), chain(seq1, ...), dropwhile(fun, seq),
+    zip_longest(seq1, ..., fillvalue=None), product(seq1, seq2),
+    permutations(it, length=None), combinations(it, length)
    - iter(itérable), reverse(itérable), enumerate(itérable), zip(itérable,...) -> itérateurs
    - next(itérateur) -> objet ou raise StopIteration
-[...]
+** générateurs (P)
+  - *expression génératrice* (... for ... in ... [if ....]) -> produit un générateur
+  - *fonction génératrice*: fonction avec des yield au lieu d'un return ->
+    retourne un générateur
+  - un *générateur* définit __iter__() et __next__(); il sert à construire un
+    itérateur avec iter(gen); il renvoie des données à la demande (*lazy*), très
+    utile pour *coroutines* de type producteur/consommateur
+** nested functions et closure
+  - une fonction définie dans le corps d'une autre peut accéder au contexte
+    supérieur avec *nonlocal* (entre local et global)
+    NB: global permet aussi de créer une nouvelle variable, nonlocal pas
+  - une *closure* est une fonction avec accès à un contexte personnel caché,
+    produite comme valeur de retour d'une autre fonction, dont elle garede une
+    copie du contexte à l'état au moment du retour
+  - une closure peut aussi être obtenue en retournant un *lambda*
+** décorateurs
+  - c'est une
+  - décorateur = fonction recevant une fonction et retournant une fonction (la
+    fonction "décorée") *ou* recevant et retournant une classe
+  - *args et **kwargs peuvent être utiles pour compatibilité d'appels entre
+    fonction d'origine et fonciton décorée
+  - encapsulation d'une fonction d'origine, généralement "pure" ou à laquelle on
+    n'a pas accès directement 
+** ce qui manque: prog concurrente et coroutines
+* Java
