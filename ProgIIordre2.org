@@ -145,7 +145,6 @@
     copie du contexte à l'état au moment du retour
   - une closure peut aussi être obtenue en retournant un *lambda*
 ** décorateurs
-  - c'est une
   - décorateur = fonction recevant une fonction et retournant une fonction (la
     fonction "décorée") *ou* recevant et retournant une classe
   - *args et **kwargs peuvent être utiles pour compatibilité d'appels entre
