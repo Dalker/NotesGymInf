@@ -1,0 +1,59 @@
+#+TITLE: Résumé ISI-4: Réseaux
+#+AUTHOR: Dalker
+#+DATE: 2021.01.10
+* Couches
+  - refs: man pages Linux, RFG internet engineering task force, W3C, "intro to
+    computer networks" de Peter L Dordal
+  - Box 1 <-LAN-> "Gray Box" <-IP-> "Black Box" <-IP-> "Gray Box" <-LAN-> Box 2
+  - les "Gray Box" sont des *routeurs*
+  - couches (*layers*): LAN / IP / TCP-UDP / HTTP-FTP-DNS-SMTP-SSH / Application
+  - communications: process-to-process (app), host-to-host (tcp/udp), lan-to-lan (ip)
+  - *en-têtes de message* s'ajoutent et s'enlèvent par couche
+  - chaque étape de connexion physique est soit par câble soit par ondes
+* Ethernet
+  - *ethernet*: câble coaxial, standard pour LAN dès 1980
+  - *commutation par paquets*: bits de synchronisation (11...10) suivis
+    d'adresse source (6b), adresse dest (6b), type (2b), message et checksum
+    (CRC: Cyclic Redundancy Check);
+    minimum 64B=512b pour une *trame* ethernet
+  - *signal jam* (brouillage) = collision entre 2 trames; pour l'éviter un
+    message doit avoir une taille minimale, fonction de la plus grande distance
+    entre objets connectés, laquelle est donc limitée; l'appareil le plus
+    éloigné doit recevoir le premier bit avant que le dernier ne soit émis.
+  - les *adresses MAC* (Media Access Control) sont sur 24 bits (4M possiblités)
+    dont les 6 premiers sont l'id du fabriquant et l'avant-dernier indique si
+    l'adresse est globalement unique (pour machines virtuelles) [NB: 48 bits
+    actuellement d'après plusieurs sources en-ligne, ce qui permet de garder
+    l'unicité malgré la prolifération des machines]
+  - *switch* avec des *tables de routage* pour savoir où diriger le message
+    (après avoir "appris" la bonne directin grâce au "broadcast" de chaque
+    nouvelle machine); comme ça toutes les machines ne voient plus tous les
+    messages, ce qui donne un minimum de confidentialité
+* IP
+  - *internet* utilise une *trame IP* (IP packet) avec IP header + contenu avec
+    ses propres headers; NB: on peut déclarer une fausse adresse source dans
+    l'IP header!
+  - adresses IP: IPv4 32 bits, IPv6 128 bits; l'adresse IP se découpe en LAN
+    adress + local adress, répartis selon p.ex. /20, soit 20 bits pour LAN, le
+    reste pour local.
+  - la *fragmentation* des paquets est possible et indiquée dans l'IP header
+  - *qualité* du service IP: best effort, pas de garantie de livraison, pas de
+    limite de délai de livraison avant arrivée du 1er fragment
+  - un processus demande un *socket* pour communiquer, qui sera "vu" comme un
+    fichier, que ce soit pour UDP ou TCP, et ce via appels système socket(),
+    bind(), connect(); un DNS via l'OS permettra d'obtenir l'IP address
+* UDP + TFTP
+  - UDP: *datagram* (IP header 17), télégramme de données pour message court
+    1-way; "UDP is almost a null protocol", uniquement checksup et multi-plexage
+    des numéros de port; rapide mais pas fiable, ok pour réseau local
+  - TFTP: *trivial file transfer protocol* de la couche application utilise UDP
+    ave RRQ (read request) puis allers-retours de DATA blocks et ACK
+* TCP + HTTP
+  - TCP: *transmission control protocol* (IP header 6) livre en *full duplex*
+    ajoute un *TCP header* de 6x32 bits avec seq num, ack num, flags, sliding
+    window size, etc., trames SYN+ACK (sync, acknowledgement) et END; fiable
+    mais pas toujours rapide
+  - HTTP: *hypertext transport protocol* est un protocole en couche application
+    par-dessus TCP, port 80 (ou 443 pour https), avec header+body HTTP dans le
+    message véhiculé par TCP. Le message HTTP est du HTML (avec son propre
+    header + body...)

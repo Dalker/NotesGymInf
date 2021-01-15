@@ -1,0 +1,96 @@
+#+TITLE: Résumé d'ISI
+#+AUTHOR: Dalker
+#+DATE: 2021.01.10
+* Chemin des données
+  - instruction: fetch -> decode -> execute -> write back (ou finish)
+  - autre version: instruction fetch -> decodate -> evnetuel calcul (ALU) ->
+    transfert mémoire -> write-back sur registres
+  - instruction register(IR): instruction en cours, 
+  - program counter (PC) = compteur ordinal: adresse de la prochaine instruction
+  - *contexte du programme* = IR + PC + registres processeur + zone mémoire du
+    programme en cours
+  - les mots qui traversent le CPU suivent le *chemin des données*
+  - l'horloge est calée sur l'instruction la plus longue; pour optimiser la
+    vitesse du cpu, on décompose donc des instructions complexes en instructions
+    plus simples -> instruction multicycle, stockages intermédiaires (autre option: pipelining)
+  - *vecteur d'interruption*: adresses des instructions à suivre pour chaque
+    exception à gérer (interruption => *context switch*)
+  - c'est l'OS qui gère les ressources, notamment les stacks (piles) de chaque
+    processus, à mettre en *swap* en cas d'interruption
+  - stack: pile du programme allouée par le runtime; heap(tas): vars globales,
+    alloc dynamique par le programme
+  - une *interruption* est un type d'*exception* (changement inattendu en cours
+    d'exécution d'une séquence d'instructions) provenant d'un élément extérieur (périphérique)
+* notes de cours en-ligne
+  -source: https://www.cs.umd.edu/~meesh/cmsc411/CourseResources/CA-online/chapter/execution-of-a-complete-instruction-datapath-implementation/index.html
+  - MIPS: adressage 32 bits, 32 GPRs (general purpose registers), 32 FPRs
+    (floating point registers), FP status register, modes d'adressage:
+    immediate, displacement, register (utilisé uniquement par ALU)
+  - instructions de type I: 6 bits opcode, 5b Rs, 5b Rt, 16b immediate
+  - instructions de type R: 6 bits opcode, 5b Rs, 5b Rt, 5b Rd, 5b shamt, 6b funct
+  - instructions de type J: 6 bits opcode, 26b offset
+  - les instructions font de la gestion de mémoire, de l'arithmétique/logique et
+    des embranchements
+  - un cycle d'instruciton fait: *fetch instruction* from memory, *decode*
+    instruction, *fetch operands*, *execute* instruction, *write result*
+  - *fetch/decode instr* c'est toujours pareil: *program counter* (PC) pointe
+    vers l'*instruction memory* au bon endroit et attrape l'instruction
+  - *fetch operands* c'est toujours pareil: lire un (pour load word) ou deux
+    (pour presque tous les autres cas)
+  - l'*arithmetic and logical unit* (ALU) est utilisé pour toutes les
+    intructions excepté jump (load/store mem-ref pour calculer une adresse,
+    arithmétique/logique pour calculs, embranchement pour évaluer comparaison)
+  - une comparaison est utilisée en cas d'embranchement pour déterminer si le PC
+    doit être incrémenté de 4 pour l'adresse suivante ou faire autre chose
+  - des *multiplexers* (MUX) sont nécessaires pour branchement de plusieurs
+    inputs possibles arrivant au même endroit
+  - des *lignes de contrôle* gèrent tout ça
+  - un signal d'horloge (*clock signal*) détermine quand il faut mettre à jour
+    les valeurs de manière séquentielle (notamment les registres)
+  - l'*opcode* géré par le control décide ce qui est fait avec les registres
+  - *branch on equal* est une instruction qui fournit 2 registres à comparer et
+    un offset qui remplacera le PC si la comparaison donne True ("the branch is
+    taken"); le bout de l'instruction "offset" est étendu de 16 à 32 bits et
+    décalé comme il faut puis ajouté à la valeur prévue du PC pour créer le
+    "branch target" qui sera pris si la comparaison l'ordonne 
+* notes distillées d'une vidéo youtube:  
+  - source: https://www.youtube.com/watch?v=oETOwVBzu1s
+  - instructions en 32 bits de type R, I ou J
+  - dans les trois cas, 6b d'*opcode* destiné au *Control* (bits [31-26])
+  - *Control* reçoit l'opcode et produit 9b en output pour des "lignes de
+    contrôle", dont 5 vont vers des MUX (commutateurs): RegDst, Jump, Branch [&
+    ALUZero], MemToRet et ALUSrc et 4 activent des composants: MemRead,
+    MemWrite, ALUOp, RegWrite
+  - *PC* (program counter) pointe vers *Instruction Memory* pour y fetch-er une
+    instruction de 32 bits à répartir ensuite entre Control, Regs et autres
+    (selon si c'est un instr R, I ou J)
+** R-instructions (ex: addu)
+  - 6b opcode + 2x5b src reg + 5b dest reg + 5b shamt +6b funct
+  - exemple de *addu*:
+    ASM: addu $rd $rs $rd -> type d'intruction, registre pour résultat, registres source
+    cette instruction assembler devient un mot de 32 bits contenant une
+    instruction de type R
+  - *shamt* =shift amount, pas utilisé par addu
+  - *funct* est destiné à l'*ALU*, par exemple "add" (idem pour instruction de
+    soustraction, l'opposé de l'arg 2 étant géré ailleurs)
+** J-instruction (jump)
+  - 6b opcode + 26b adresse
+  - exemple (unique?): *Jump* "to label": opcode + addresse en 26b
+  - control -> high signal à Jump, low aux autres lignes
+  - les 4b de poids fort (most significant bits) sont gardé de l'addresse de
+    l'instruction suivante, ce qui donne 30b, et les deux derniers sont mis à 0,
+    pointant ainsi à une adresse multiple de 4.
+** I-instruction
+  - 6b opcode + 2x6b regs + 16b immediate
+  - ex: "add immediate"
+** I-branch (on equal / not equal)
+  - autre ex: *branch on equal* et *branch on not equal*, détaillés ci-dessous
+  - Control high signal pour Branch, ALUOp
+  - si condition satisfaite, immediate passe par "sign-extend" et deux "shift"
+    puis devient une adresse en *bytes* pour un saut relatif à l'instruction
+    courante
+** I-store word (sw) - exemple utilisant Data Memory
+  - high signal: ALUOp, MemWrite, ALUSrc
+  - le contenu du 1er reg référencé (bits [25-31]) est interprété comme une
+    adresse dans le *Data Memory*, contenu de 2è reg [20-16] fournit donnée à
+    écrire à cette adresse

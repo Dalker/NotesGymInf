@@ -1,0 +1,77 @@
+#+TITLE: Résumé d'ISI-3: Système d'exploitation (de type GNU/Linux)
+#+AUTHOR: Dalker
+#+DATE: 2021.01.10
+* Couches sous l'OS
+  - à partir de l'OS, c'est du logiciel, en-dessous, c'est des circuits
+  - le CPU expose la taille du mot machine, le jeu d'instructions (qui seront
+    traitées de manière optimisée par l'électronique), les registres (32 si
+    MIPS), le chemin des données, le bus des données, des modes du processeurs
+    (mode noyau / mode user), des lignes de contrôle, des interrupts
+  - bus: PCI (extensions de carte mère), SPI serial master/slave (SCLK clock,
+    MOSI master out / slave in, MISO master in / slave out -> full duplex,
+    lignes dédiées pour chaque périphérique)
+  - ROM ou OTP (one time programmable) du CPU ont des données disponibles à
+    l'allumage (vs RAM "volatile", vide au démarrage); suite d'étapes pour
+    accéder au disque pour accéder au programme qui permet d'accéder au reste du
+    disque qui permet d'accéder au reste des programmes
+  - état allumé de base: standby en attendant une interruption
+  - un périphérique qui veut transférer une donnée demande une interruption au
+    CPU; le CPU, qui est plus rapide que le contrôleur de périphérique, choisit
+    les interrupts selon des priorités (tout ceci est mieux qui le polling, qui
+    fait perdre des cycles au CPU); c'est cependant l?OS qui gère les
+    interruptions (sensible car suspend le reste et requier cohérence et
+    ordonnancement, et soucis de sécurité)
+* Noyau
+  - *noyau* de l'OS: partie protégée avec données et code, gère interruptions
+    (matérielles et logicielles), exécute services en mode protégé
+    *non-interruptible* (ce qui garantit la cohérence) via routines courtes
+  - un périphérique "lent" (ex: clavier) aura une basse priorité
+  - couches (layers): electronique -> hardware -> device control -> logical ->
+    bridges -> virtual -> user space -> reste de l'OS
+  - interruption provenant de l'"utilisateur": identifier (root ou pas?)
+  - services OS pour users: via GUI (métaphore de bureau), shell (terminal avec
+    ligne de commande OS) ou ssh (connexion depuis autre machine)
+  - services OS pour programmes: via API de l'OS (appels système - system call),
+    exécutés en mode noyau (ininterruptible); 1er service: charger et lancer
+    programmes user; en Linux pour C c'est glibc qui fournit l'API
+  - programme user: code compilé en module objet puis assemblé avec d'autres
+    modules objet, ce qui fournit une org d'espace d'adressage logique, avec
+    espace réservé pour l'OS, espace pour instructions, pour heap(tas), stack(pile)...
+    NB: la partie de mem "logique" réservée à l'OS est partagée pour tous les
+    programmes!
+* Gestion de mémoire logique en multi-proc
+  - l'*espace d'adressage* logique est partagé; les petits programmes n'ont pas
+    besoin de tout, une bonne partie du code n'est pas utilisé (cas
+    exceptionnels)
+  - la gestion I/O est *synchrone* pour un programme (qui attend son I ou O)
+    mais *asynchrone* pour l'OS (qui gère des tas d'événements en attendant,
+    genre interruption souris, carte réseau,... et le *multi-processing* avec un
+    *contexte* pour chaque *processus*)
+  - *multi-processing* 
+    1) interrompre un prog par un autre plus prioritaire en *swappant/commutant*
+       son contexte (registres, stack) et laissant ses données en mémoire;
+    2) un *descripteur* de processus géré par l'OS a l'identité du process
+       (pid), sa priorité, un pointeur de sommet pile (stack pointer), une base
+       de table des pages et un lien de chaînage vers le prochain proc de même
+       priorité dans queue d'exécution, ainsi que le nombre de tics passés dans
+       le proc (pour décider quand céder la priorité, à certaines interruptions
+       d'horloge); tout ceci peut être en RAM ou swap
+    3) exécution *concurrente* des procs gérés par *pagination* pour éviter trop
+       de swapping; la pagination mappe la mém physique vers une mém logique, en
+       découpant l'adressage logique du programme en "pages" de 2^{12}=4kB,
+       mappés vers des *pageframes* de 4kB de mémoire physique; une *table de
+       pages* par programme gère l'adressage par no. de page (bits de poids fort
+       de l'addresse) + offset (bits de poids faible), dont 1 bit pour savir
+       s'il faut chercher en RAM ou swap. Les pages peu utilisées sont "swap out"
+       et une interruption *faute de page* demande des "swap in" (<- Linux fait
+       ça)
+     NB: la Direct Memory Access (DMA) aide à accélérer le swap out / swap in
+  - la *virtualisation* permet par exemple d'obtenir une machine virtuelle via
+    internet dont la mémoire allouée est limitée par ce qu'on a acheté
+  - le *trashing* est une possible perte de performance s'il y a beaucoup de
+    fautes de page
+* POSIX
+  - effort de standardisation via *POSIX* et noyau Linux (au développement
+    centralisé et fiable), interfaces périphériques libres, standardisation de
+    programmation système => réduction des coûts et efficacité (ex: machine
+    virtuelle LAMP pour quelques centaines de CHF/an)

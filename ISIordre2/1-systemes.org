@@ -1,0 +1,95 @@
+#+TITLE: Résumé d'ISI-1: Systèmes + Architecture
+#+AUTHOR: Dalker
+#+DATE: 2021.01.10
+* Considérations du 1er jour
+  - le gros (en %) du logiciel  actuel est libre
+  - plein de "petites mains", mais à la fin on doit travailler en groupe
+  - tout se qui s'exécute s'exécute quelque part (dans une machine physique)
+  - ressources: RFC, docs, liens, livres,...
+* Système informatique
+  - entité observable dont on peut décrire des *états* et *changements*
+  - *délimité* par son *environnement* avec lequel il peut intéragir via des
+    *interfaces*, *digitales* ou *analogiques*
+  - un système artificiel répond à des *besoins* avec une *solution*
+  - les systèmes sont généralement *composites* (plusieurs *composants*, pouvant
+    intéragir entre eux et avec l'environnement) "diviser pour mieux régner"
+  - *architecture*: représentation de l'organisation des composants et leurs interactions
+  - en info, traitement numérique 011101.. mais *support matériel* avec
+    *sous-systèmes* où s'exécutent les programmes
+  - *logiciel* = ensemble des programmes pouvant s'exécuter dans un système, lequel
+    est une instance physique; le logiciel représentent >70% du coût de nos
+    jours, et ce pour le développement (vs. le matériel dont les coûts sont dans
+    la production et distribution)
+  - le code *haut niveau* (haut niveau d'abstraction) est très "productif" mais
+    il repose sur des couches inférieures
+  - les bases logicielles, open source, adaptées, réutilisées sont utilisées à
+    différents niceaux d'abstraction, en interaction
+  - autres coûts: la *certification*
+* Intro vers l'Architecture
+  - cathédrale: 1 architecte, bâtiment: qqs architextes, logiciel: tout le monde
+    est architecte => souci
+  - l'architecture donne une représentation répondant aux proccupations des *parties-prenantes*
+  - approche holistique / systémique, orientée objectifs
+  - méthodologie de modélisation
+  - *ultra-qualité*: adapter le niveau de qualité aux contraintes
+  - heuristique, a.k.a "feeling"
+  - possibilité de multiples modèles interdépendants et plusieurs points de vue
+    (selon intervenants) et plusieurs vues (opérationnel, fonctionnel,
+    organique)
+  - considérer tout le cycle de vie, la décomposition en sous-systèmes et
+    l'interaction avec l'environnement, dont d'autres systèmes, via interfaces
+  - considérer plusieurs niveaux d'abstraction
+* Facteur temps
+  - "loi" (ou heuristique) de Moore (un des fondateurs d'Intel): capacités
+    doublent tous les 18 mois
+  - => concevoir produits avec 4-5 ans d'avance en prenant en compte cette
+    heuristique
+* Architecture d'ordinateur: "comment ça marche"
+  - physique < electronique < CPU < OS < machine virtuelle < programme <
+    application < environnement
+  - le "mot machine" a une taille fixe, généralement 32 ou 64 bits
+  - ex. de machine virtuelle: gestion de BDD séparant transactions pour assurer
+    cohérence finale; Java Virtual Machine pour abstraction "objet"; système ERP
+    dans application d'une banque
+  - ex. sans machine virtuelle: shell
+* Mémoire
+  - Memory Management Unit (MMU) interface CPU et mémoire; Directe Memory Access
+    (DMA) permet à la mémoire et un disque d'échanger des données directement
+    sans transiter par le CPU; temps de réponse très différents pour les 3
+    composants (cpu, mem, disk) => contraintes => optimisation nécessaire
+  - on utilise encore des disques car ils sont très fiables (aspect mécanique);
+    ils sont lus par secteurs; des algorithmes assurent de répartir les accès de
+    manière non séquentielle (pas tjs au même endroit) mais cela a un coût
+* Calculs et ALU
+  - Arithmetic and Logic Unit (ALU) gère les calculs dans le CPU, par exemple
+    codage "en complément à 2" pour trouver opposé d'un numbre et implémenter la
+    soustraction comme une addition modifiée; l'ALU fait du parallélisme (+
+    efficace)
+  - un co-processeur arithmétique éventuel optimise les calculs avec des floats
+    NB: les "currency" (ex. bancaire) sont gérés comme des int
+  - parallélisation bit à bit pour une somme par exemple, carrément "câblée",
+    avec itérations pour gérer les retenues jusqu'à ce qu'elles soient toutes
+    nulles
+  - "poids" de bit: fort à gauche, faible à droite
+* Architecture MIPS
+  - MIPS: MicroProcessor without Interlocked Pipeline Stages
+  - "program counter" = compteur ordinal d'adresse d'instruction pointant sur  "instruction memory"
+  - deux flux: "instruction memory" + "data memory"
+  - registres d'instruction vs. registres (adresses sur mémoire de base, offset,
+    ...)
+  - mémoire rapide et chère: registres (câblé) < cache (SRAM) < mem centrale
+    (DRAM) < disques SSD, magnétiques: lentes et bon marché
+  - la suite d'instructions du DRAM est cached, vu que probablement sera la
+    suite effective
+  - après chaque instruction, *état* de compteur ordinal, registres, mots
+    valides dans cache
+  - le flux normal peut être interrompu (par des *interruptions matérielles* ou
+    logicielles)
+  - la mémoire cache utilise une *table de hachage* basée sur des *tags* de 20
+    bits à combiner avec 10 bits d'index
+  - le MIPS usuel a 32 registres
+  - ex d'instruction: add rd, rs, rt (3 registres)
+  - instruction: fonctionnalité aux bits faibles, addresses de registres entre
+    deux, 5 bits spéciaux aux bits forts
+  - multiplexer (MUX) permet d'aiguiller plusieurs périphériques en une entrée
+  - *lignes de contrôle*
