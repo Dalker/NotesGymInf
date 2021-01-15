@@ -1,5 +1,6 @@
 #+TITLE: Résumé d'ordre 2 de Prog II
 #+AUTHOR: Dalker (daniel.kessler@dalker.org)
+#+OPTIONS: toc:t
 
 * paradigmes
   - *procédural*: manipuler sructures de donnée, emphase sur logique correcte et
@@ -59,7 +60,7 @@
   - *else* après une boucle (while ou for) s'exécute après une terminaison
     normale (sans break)
   - * sert d'*unpacking operator* pour détupler une séquence, et ** un mapping
-  - args de fonction obligatooirement positionnels, /, normaux, *,
+  - args de fonction obligatoirement positionnels, /, normaux, *,
     obligatoirement by keyword
   - les variables définies dans les boucles parasitent le scope, mais pas
     celles définies dans une compréhension
