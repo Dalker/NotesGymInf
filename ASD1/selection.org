@@ -1,6 +1,7 @@
 #+TITLE: Pseudo-code de tri par sélection (exo 3)
 #+AUTHOR: Dalker (daniel.kessler@dalker.org)
 
+* exo3
 
 #+begin_src 
 entrée: A est un tableau de n objets triables
@@ -28,7 +29,7 @@ meilleur des cas: déjà classé
 pire des cas: à l'envers
 -> O(n²)
 
-exo4:
+* exo4:
 
 n suffisamment grand, p.ex. n > |2a| => n/2 \leq n+a \leq 3n/2
 => (1/2)^b n^b \leq (n+a)^b \leq (3/2)^b n^b
