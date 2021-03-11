@@ -1,0 +1,35 @@
+#+TITLE: Pseudo-code de tri par sélection (exo 3)
+#+AUTHOR: Dalker (daniel.kessler@dalker.org)
+
+
+#+begin_src 
+entrée: A est un tableau de n objets triables
+
+pour j := 1 à n-1:       n-1
+  m = j                  n-1
+  Am = A[m]              n-1
+  pour k := j à n:       sum_{j=1}^{n-1}(n-j) = S
+     si A[k] < A[m]:     idem
+        m = k            sum_{j=1}^{n-1}_{k=j}^{n-1}t_{j,k}
+        Am = A[k]        idem
+  A[m] = A[j]            n-1
+  A[j] = Am              n-1
+#+end_src
+
+invariant: à l'étape j, A[1..j] est trié.
+
+à l'étape n-1: si le nème terme était plus petit que le n-1ème il aurait déjà
+été échangé auparavant
+
+S = (n-1)n/2 ~ n² dans tous les cas
+
+meilleur des cas: déjà classé
+-> O(n²)
+pire des cas: à l'envers
+-> O(n²)
+
+exo4:
+
+n suffisamment grand, p.ex. n > |2a| => n/2 \leq n+a \leq 3n/2
+=> (1/2)^b n^b \leq (n+a)^b \leq (3/2)^b n^b
+
