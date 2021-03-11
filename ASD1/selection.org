@@ -30,6 +30,6 @@ pire des cas: à l'envers
 
 exo4:
 
-n suffisamment grand, p.ex. n > |2a| => n/2 \leq n+a \leq 3n/2
-=> (1/2)^b n^b \leq (n+a)^b \leq (3/2)^b n^b
+n suffisamment grand, p.ex. $n > |2a|$ => $n/2 \leq n+a \leq 3n/2$
+=> $(1/2)^b n^b \leq (n+a)^b \leq (3/2)^b n^b$
 
