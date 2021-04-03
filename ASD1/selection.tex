@@ -1,0 +1,62 @@
+% Created 2021-03-11 jeu 19:27
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Dalker (daniel.kessler@dalker.org)}
+\date{\today}
+\title{Pseudo-code de tri par sélection (exo 3)}
+\hypersetup{
+ pdfauthor={Dalker (daniel.kessler@dalker.org)},
+ pdftitle={Pseudo-code de tri par sélection (exo 3)},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1 (Org mode 9.3)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\begin{verbatim}
+entrée: A est un tableau de n objets triables
+
+pour j := 1 à n-1:       n-1
+  m = j                  n-1
+  Am = A[m]              n-1
+  pour k := j à n:       sum_{j=1}^{n-1}(n-j) = S
+     si A[k] < A[m]:     idem
+	m = k            sum_{j=1}^{n-1}_{k=j}^{n-1}t_{j,k}
+	Am = A[k]        idem
+  A[m] = A[j]            n-1
+  A[j] = Am              n-1
+\end{verbatim}
+
+invariant: à l'étape j, A[1..j] est trié.
+
+à l'étape n-1: si le nème terme était plus petit que le n-1ème il aurait déjà
+été échangé auparavant
+
+\(S = (n-1)n/2 ~ n²\) dans tous les cas
+
+meilleur des cas: déjà classé
+-> \(O(n²)\)
+pire des cas: à l'envers
+-> \(O(n²)\)
+
+exo4:
+
+\(n\) suffisamment grand, p.ex. \(n > |2a|\) => \(n/2 \leq n+a \leq 3n/2\)
+=> \((1/2)^b n^b \leq (n+a)^b \leq (3/2)^b n^b\)
+\end{document}
