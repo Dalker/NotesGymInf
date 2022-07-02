@@ -1,0 +1,267 @@
+#+author: Dalker (daniel.kessler@dalker.org)
+#+title: Résumé de Génie Logiciel
+#+subtitle: cours de Solal Pirelli, GymInf 2022
+#+date: 2022.07.02
+#+description: résumé partiel du cours de SwEng de GymInf
+#+keywords: génie logiciel, gyminf
+#+options: H:2
+* Généralités
+- on sait déjà coder, maintenant on va s'intéresser aux *exigences* qui amènent
+  à la *conception* avant d'effectivement coder, puis *tester*, utiliser des
+  *DevOps* (contrôle de version, automatisation des tests à lancer à chaque
+  nouvelle version, etc.), la *sécurité* et la *performance*, et tout ça en
+  *travail d'équipe*, et en prévoyant l'*évolution* (y compris de code qu'on n'a
+  pas écrit soi-même)
+- un logiciel n'est jamais 100% exact ou 100% terminé
+- "chercher sur internet c'est normal, c'est sain et c'est une bonne idée" (ex:
+  StackOverflow - ou bêtement Google)
+- code: il faudrait qu'il soit *lisible*, *maintenable* et *débogable*, sachant
+  que le contexte et les exigeances pourront (vont) changer
+** trucs pédagogiques
+- mini-quiz avec feedback immédiat (par exemple avec =speak up=)
+- pour une épreuve, donner 2-3 unit tests aux élèves, et en garder d'autres en
+  réserve, pour vraiment pouvoir ensuite donner 1pt / test passé
+* Dev Processes (Exigences, travail d'équipe, SCRUM, ...)
+** Exigences
+ - *persona* = profil de personnes qui se ressemblent, racontée avec un
+   pseudo-nom (Alice, Bob, ...) mais désignée par une catégorie (étudiant,
+   retraité, ...) dans les récits d'utilisateur -- prévoir un public varié
+ - *récit d'utilisateur* (*user story*): "en tant que <persona> je veux <besoin>
+   afin de <but>"
+ - méthode *INVEST* pour préciser les user stories: Independent, Negotiable,
+   Valuable, Estimable, Small, Testable
+ - *domain-driven design*: nommer les choses dans le code avec des termes
+   proches des exigences utilisateur
+ - *behaviour-driven development*: formalisation de récits en tests, selon la
+   forme "étant donné ... quand ... alors ..." (pré-condition, action,
+   post-condition)
+ - workflow: interviews -> récits -> tests
+ - les exigences devraient être priorisées (P0: obligatoire, P1: utile, P2:
+   serait bien)
+ - le client valide les récits et le logiciel, l'équipe technique vérifie le
+   logiciel par des preuves et des tests
+** Travail d'équipe
+- se mettre *d'abord* d'accord sur l'API, avant de démarrer une UI
+- minimiser la dépendance entre les tâches
+- préférer un découpage "horizontal" pour avoir quelque chose à faire quand
+  quelqu'un est absent
+- *code review*:
+  - lire le changelog, donner des commentaires sur le code (peut être découpé en
+    plusieurs fois), puis décider ensemble quoi faire avec le code
+  - indiquer dans un commentaire si c'est important, puis si c'est une question,
+    suggestion ou typo, puis le commentaire
+** Processes
+*** Waterfall
+- exigences -> conception -> implémentation, avec tâches, rendus et
+- deadlines clairs, documentation à chaque étape
+*** Agile
+- s'adapter aux exigences mouvantes, itérativement, et sacrifier la doc exhaustive
+*** SCRUM (implémentation d'Agile)
+- équipes de < 10 personnes, pluridisciplinaires, sans hiérarchie
+  - *scrum master*: s'assure que tout va bien et que les gens se parlent
+  - *product owner*: représente en interne les clients, responsable du product backlog
+- Sprints de durée fixe (1-4 semaines) amenant chacun à un prototype (produit qui marche)
+  - Sprint Planning -> Daily Scrums -> Sprint Review -> Sprint Retrospective
+  - Buckets during sprint: sprint backlog | in-progress | done
+- le *product backlog* est une liste priorisée de récits utilisateur et de
+  bugs, avec une portée nettement plus large qu'un seul sprint
+- le *sprint backlog* est extrait du product backlog pour le sprint; on en
+  dérive des *tâches* avec estimation de temps (y compris doc et tests) et une
+  "definition of done"
+- le *daily scrum* est un "stand-up meeting" où chacun dit brièvement ce qu'il
+  a fait, ce qu'il va faire et ce qui le bloque (bug, pré-requis, etc.)
+- les petits bugs se corrigent de suite, les gros communiqués au /product
+  owner/ qui les ajoute au product backlog (ou pas)
+- à la fin du sprint, un *sprint review* fait une démo du prototype aux
+  stakeholders, puis un *sprint retrospective* permet à l'équipe de discuter
+  les *processus* et extraire le sprint backlog pour le prochain sprint
+*** Kanban
+- sorte de SCRUM à l'extrême, sans sprint
+- 5 colonnes: Backlog, Spec (max 5), Implémentation (max 9), Review (max 4), Done
+- en plus: un placeholder pour les /tâches bloquées/ (par un prérequis *externe*)
+*** Pair programming
+conducteur + passager sur une machine
+*** Planning poker
+- chacun estime la durée d'une tâche et pose sa carte d'estimation face cachée,
+  on les découvre au même temps, puis on itère
+* DevOps (version control, branches, intégration continue)
+** git
+- git gère les fichiers ligne par ligne; une modification est traduite en une
+  suppression et une insertion de ligne
+- *diffs*:
+  - =git diff= pour diff entre /staged/ (après =git add=) et /committed/
+  - =git diff --staged= pour diff entre /disque/ et /staged/
+- *branches*:
+  - =git switch branch=, ou =git switch -c branch= s'il faut la créer
+  - =git merge= pour intégrer la branche
+  - =HEAD= pointe au dernier /commit/ de la branche actuellement sélectionnée
+  - modèle /develop/ vs /master/:
+    - *master* contient les /production release versions/
+    - *develop* contient le travail vers la prochaine release
+  - branchage plus spécifique: =feature/today=, =bug/foo=, ...
+- *post-éditer un message de commit*: =git commit --ammend [-m "..."]=
+  - plus possible après =git push=!
+- =.gitignore= utile pour fichiers *privés* et résultats de compilation
+- *fork*: sorte de branche pour un collaborateur externe (vs =branch= pour un
+  collaborateur interne), nécessitant un *pull request* pour être intégrée
+- *commit*:
+  - but: "journal pour future self", *quoi* et *pourquoi*, pas /comment/
+  - résumé en une ligne obligatoire
+  - éventuelle ligne vide et détails
+- *revert*: =git revert 333435= fait l'opération inverse du commit, tout en
+  gardant l'historique
+- etc:
+  - *cherry pick* pour appliquer /commit/ sur autre branche (e.g. pour bugfixes)
+  - =git blame= pour trouver quel /commit/ a modifié une ligne
+  - =git bisect= pour recherche dichotomique afin de trouver un changement
+  - ... (RTFM!)
+** intégration continue
+- maintenir les configs des build systems (moteurs de production, i.e. =make=,
+  =gradle=, ...) aussi dans git
+- *github actions* permet de faire des tests (y compris de style de code)
+  directement dans github pour vérifier l'intégrité d'une /pull request/
+* Tests et débogage (unit tests, TDD, tests de régression)
+- idéal: vérification formelle (preuve)
+- réalité: tests --- mais "le test ne peut montrer que la présence de bugs, pas
+  leur absence" (Dijkstra)
+** Tests
+- *tests automatisés*: "arrange - act - assert", pour vérifier le comportement
+  des cas connus et augmenter la confiance
+- *on teste toutes les méthodes publiques*, comme si on était un autre module
+  qui voit le module à tester
+- *on ne teste pas des méthodes privées* (qui sont des "détails de
+  l'implémentation" sans garanties)
+- la *couverture* (/coverage/) évalue les tests (part de code exécuté par les
+  tests), surtout la couverture des /branches/ (chaque "if" est-il testé avec
+  ses différentes possibilités?) -- mais couvrir ne suffit pas, les tests
+  doivent être des vrais tests
+- *Test-Driven Development*: écrire les tests avant le code, pour chaque
+  feature, en partant des exigences -- on s'assure que le test /fail/ d'abord
+- *test de régression*: test introduit quand un bug est détecté, afin de le
+  mettre en évidence (il échoue) avant de corriger le bug (le test doit alors
+  passer) -- évitera que le bug réapparaisse, grâce à la /continuous integration/
+- *injection de dépendances*: fausses dépendances (*mock*) pour les tests,
+  imitant des objets externes (fichiers, connexions réseaux,...) pouvant varier,
+  afin que le test soit reproductible -- cela suppose que le code ait des
+  dépendances explicites et des /callbacks/ clairement définis
+** Tests en Python:
+  - simple =assert= (lève une exception s'il échoue) ou =raise AssertionError("...")=
+  - =unittest.TestCase=, class dont on hérite avec
+    - =def test_foo(self)= pour définir un test, avec des =self.assertEqual(..., ...)=
+    - =@classmethod def setUpClass()= et =setUp(self)= pour définir une méthode
+      exécutée avant chaque test
+    - =@classmethod def tearDownClass()= et =tearDown(self)= pour définir une
+      méthode exécutée après chaque test
+  - =hamcrest.assert_that()= pour plus de subtilité (multiples "matchers")
+** Debugging
+étapes:
+- *prioriser* par un triage en 3 questions: quel est l'impact? qui est impacté?
+  combien de gens sont impactés?
+- *localiser*: dans quel environnement? avec quelles étapes? est-ce déterministe?
+  -> l'IDE aide, avec un =breakpoint= au bon endroit pour explorer le contexte et
+  tester l'environnement local
+- *comprendre*: suivre une chaîne de "pourquoi?" jusqu'à la *root cause*
+- écrire un *test de régression* qui échoue avec le bug
+** Débogueur
+- a pour but de trouver la "root cause" d'un bug
+- but: reproduire et localiser le bug le plus possible
+- limitation: il faut avoir des symboles de débogage (pas toujours disponibles
+  pour modules externes)
+- outils de base:
+  - suspendre l'exécution ("mettre en pause") avec des *breakpoints*
+  - affichier (et modifier) des variables (en les "survolant")
+  - pas-à-pas avec
+    - *step over* (ligne suivante de la fonction actuelle)
+    - *step into* (entre dans la fonction appelée)
+    - *step out* (avance jusqu'au retour à la fonction appelante)
+    - *run to cursor* (avance jusqu'au point indiqué)
+** Programmation défensive
+- "garbage in, garbage out": danger de cercle vicieux
+- vérifier des *préconditions* et *postconditions* ou des *invariants* (pré =
+  post) e.g. avec =assertInvariants()= d'un module de test
+- *assertions* pour vérifier la cohérence d'une étape intermédiaire
+- erreur => abandonner le module, pas l'application
+- ne pas laisser des pointeurs vers des muables exister à l'extérieur de la classe
+- *copies défensives* des muables
+- *logging* pour garder une trace
+- *programmation par contrats* (e.g. module =icontract=)
+* System Design (modularité, abstraction, patterns)
+"The basic technique we have for managing the complexity of software is
+modularity" (Barbara Liskov)
+** Abstraction
+- *interface*: ce qui est exposé d'une fonction, classe ou paquet au reste du
+  code (méthodes, objets, erreurs, ...)
+- *API*: interface d'un serveur, librairie, etc.
+** Modularité
+- but: minimiser le contexte nécessaire et maximiser la réutilisabilité
+- moyen: maximiser la régularité, minimiser la complexité
+- complexité de Kolmogorov: nombre de mots nécessaires pour décrire un module
+- éviter les dépendances qui ne servent que dans des cas très spécifiques ou de
+  manière trop indirecte (cas extrême: les variables globales, à proscrire)
+- ex. des couches app -> transport -> réseau -> liaison -> physique, chaque
+  couche n'a besoin de connaître l'interface que de la couche juste en-dessous
+  -- et chacune sera décrite au bon niveau d'abstraction
+- on peut facilement composer des fonctions (via les paramètres) et plus
+  subtilement composer des classes ("containment", vs. héritage), mais ne pas en
+  abuser
+** YAGNI et Cargo Cult
+- You Ain't Gonna Need It: éviter de coder des machins complexes dont on n'est
+  pas sûr d'avoir vraiment besoin
+- "Cargo Cult": on a vu quelqu'un faire ça, donc on imite parce que "ce serait utile"
+  (applicable par exemple à la strictitude de tel ou tel type de diagramme UML)
+** Gestion de défaillances d'un module
+- pour défaut externe (fichier corrompu, disque plein, pas d'accès internet)
+  - réessayer (par exemple un appel internet)
+  - remplacer (par un autre module - ex. demander PIN si lecteur d'empreinte
+    digitale pas possible car doigts mouillés)
+- pour défaut interne (bug)
+  - réparer (avec une solution de backup)
+  - isoler (un onglet crashe, mais pas tout le navigateur)
+** Design Patterns
+- déf: Vocabulaire du Génie Logiciel, évite de réinventer la roue et simplifie
+  la maintenance. C'est une recette, mais pas un algorithme.
+- workflow: problème -> pattern -> code
+- certains patterns sont devenus implicites, par exemple *Iterable*
+- ex: Adapter, Builder, Composite, Observer, ...
+- Decorator ("Middleware"): mis avant la requête, avec la même interface (donc
+  dans n'importe quel ordre), par exemple pour Authentification et Cache
+** Patterns d'UI
+- but: découpler l'UI (*View*) de la logique (*Model*)
+- MVC: input -> *Controller* -> M -> Controller -> créer V (p. ex. pour le web)
+- MVP: V <-discutent-> *Presenter* -utilise-> M (lié à un framework)
+- MVVM: V -observe-> ViewModel (pseudo-UI indép de la plateforme) -utilise-> M
+** Lisibilité de code
+- *nommage*: noms clairs, descriptifs, assez courts, éventuellement "en notation
+  hongroise" comme =widthRectangle= ou =cmDistance= (le préfixe précise le nom
+  et met en évidence des incohérences à l'utilsation)
+- préférer enums aux "flags"
+- bien formatter (indentation)
+- docstrings ("quoi", court résumé) et commentaires inline ("pourquoi"), jamais
+  "comment" (qui risque de changer si on modifie le code et ne sert à rien si le
+  code est lui-même propre et lisible)
+- public: futur self et collègues -> le commentaire "drôle" ne l'est plus 2 semaines après
+- choisir des conventions et s'y tenir, avec un outil de vérification /
+  adaptation du code
+* Performance
+- performance: latence et débit (= "throughput"), variabilité, objectifs
+- il faut optimiser l'étape la plus lente
+- benchmarking
+- profiling
+- bug de performance
+* Évolution du code
+- choisir des compromis (trade-off)
+- dette technique (legacy)
+- refactoring: améliorations incrémentales, en interne, sans changer l'interface externe
+  (pour "payer la dette technique")
+- code smells: techniques connues pour problèmes connus, e.g.
+  - "extraire une classe",
+  - "utiliser le polymorphisme" (extraire une classe mère abstraite),
+  - "extraire des variables" (nommer clairement des étapes intermédiaires)
+  - "extraire des méthodes" (pour bouts de codes répétés)
+- documenter les changements
+- refactorer la documentation (laisser la doc meilleure qu'on ne l'a trouvée)
+- ajouter des TODO quand on voit un truc à changer mais qu'on ne le change pas
+  tout de suite
+- assurer la rétro-compatibilité
+- indiquer l'obsolétion (deprecated) pour annoncer la non-rétrocompatibilité prévue à venir
+- nommer clairement les *versions*
